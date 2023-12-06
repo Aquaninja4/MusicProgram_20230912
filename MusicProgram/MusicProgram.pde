@@ -40,17 +40,22 @@ void keyPressed() {
   if ( key=='P' || key=='p' ) song1.play();
 
   if (key == 'L' | key == 'l') {
-  if (loopOn==true) {
+  /*
+    String songStr = String.valueOf(song1.position());
+    int loopFix = int(songStr);*/
+      if (loopOn==true) {
     song1.loop(-1);
   } else {
     song1.loop(0);
   }
-    if (loopOn==true) {  //Nightmode, basic control is Boolean
+  
+      if (loopOn==true) { //why does this fix mute button going to the start?????
       loopOn = false;
     } else {
       loopOn = true;
     }
   }
+   
   //
   if (key == 'M' | key == 'm') {//MUTE Button
     //MUTE Behavior: stops electricy to speakers, does not stop file
@@ -68,8 +73,10 @@ void keyPressed() {
   } //End MUTE
   //
   //Actual .skip() allows for variable ff and fr using .position()+-
-  if (key == CODED && keyCode == RIGHT) song1.skip(0);
-  if (key == CODED && keyCode == LEFT) song1.skip(1000);
+  if (key == CODED && keyCode == RIGHT) song1.skip(1000);
+  if (key == CODED && keyCode == LEFT) song1.skip(-1000);
+  //
+  if (key == CODED && keyCode == UP) song1.play(song1.length());  //song next or end
 } //End keyPressed
 // 
 void mousePressed() {
