@@ -6,13 +6,28 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
 //Global Variables
+int appWidth, appHeight, smallerDimension;
 Minim minim; //crates object to access all functions
 AudioPlayer song1; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 Boolean loopOn = false;
+float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 void  setup() {
   //fullScreen();
   //size(300, 700); //Portrait size
-  //size(1200, 800);
+  size(1200, 800);
+  appWidth = width;
+  appHeight = height;
+  smallerDimension = (appWidth >= appHeight) ? appHeight : appWidth;
+  //
+  //Population
+  actionBarX = appWidth*0;;
+  actionBarY = appHeight*0; wasd//make it at the bottom
+  actionBarWidth =appWidth-1;
+  actionBarHeight =appHeight*1/15;
+  //
+  //DIVs
+  rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
+  //
   minim = new Minim(this);
   String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
   String TwelveSpeed = "Twelve Speed - Slynk.mp3";
@@ -23,7 +38,6 @@ void  setup() {
   //
 
   //song1.loop(0);
-
 } //End setup
 //
 void draw() {
@@ -40,22 +54,22 @@ void keyPressed() {
   if ( key=='P' || key=='p' ) song1.play();
 
   if (key == 'L' | key == 'l') {
-  /*
+    /*
     String songStr = String.valueOf(song1.position());
-    int loopFix = int(songStr);*/
-      if (loopOn==true) {
-    song1.loop(-1);
-  } else {
-    song1.loop(0);
-  }
-  
-      if (loopOn==true) { //why does this fix mute button going to the start?????
+     int loopFix = int(songStr);*/
+    if (loopOn==true) {
+      song1.loop(-1);
+    } else {
+      song1.loop(0);
+    }
+
+    if (loopOn==true) { //why does this fix mute button going to the start?????
       loopOn = false;
     } else {
       loopOn = true;
     }
   }
-   
+
   //
   if (key == 'M' | key == 'm') {//MUTE Button
     //MUTE Behavior: stops electricy to speakers, does not stop file
@@ -67,7 +81,7 @@ void keyPressed() {
       //CATCH: ask .isPlaying() or !.isPlaying()
       song1.unmute();
     } else {
-      //Possible ERROR: song could go back and go to the start; acts if its a play button 
+      //Possible ERROR: song could go back and go to the start; acts if its a play button
       song1.mute();
     }
   } //End MUTE
@@ -78,7 +92,7 @@ void keyPressed() {
   //
   if (key == CODED && keyCode == UP) song1.play(song1.length());  //song next or end
 } //End keyPressed
-// 
+//
 void mousePressed() {
 } //End mousePressed
 //
