@@ -6,6 +6,7 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
 //Global Variables
+int loopFix =  song1.position() 
 int appWidth, appHeight, smallerDimension;
 Minim minim; //crates object to access all functions
 AudioPlayer song1; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
@@ -20,9 +21,11 @@ void  setup() {
   smallerDimension = (appWidth >= appHeight) ? appHeight : appWidth;
   //
   //Population
-  actionBarX = appWidth*0;;
-  actionBarY = appHeight*0; wasd//make it at the bottom
-  actionBarWidth =appWidth-1;
+  actionBarX = appWidth*0;
+  ;
+  actionBarY = appHeight*0;
+  //make it at the bottom
+    actionBarWidth =appWidth-1;
   actionBarHeight =appHeight*1/15;
   //
   //DIVs
@@ -51,16 +54,15 @@ void draw() {
 } //End draw
 //
 void keyPressed() {
-  if ( key=='P' || key=='p' ) song1.play();
 
   if (key == 'L' | key == 'l') {
     /*
     String songStr = String.valueOf(song1.position());
      int loopFix = int(songStr);*/
-    if (loopOn==true) {
-      song1.loop(-1);
-    } else {
+    if (song1.isLooping() && loopOn == true) {
       song1.loop(0);
+    } else {
+      song1.loop(-1);
     }
 
     if (loopOn==true) { //why does this fix mute button going to the start?????
@@ -91,6 +93,16 @@ void keyPressed() {
   if (key == CODED && keyCode == LEFT) song1.skip(-1000);
   //
   if (key == CODED && keyCode == UP) song1.play(song1.length());  //song next or end
+  //
+  //Simple STOP Behaviour: ask if.playing()
+  if (key == ' ') {
+    if (song1.isPlaying() ) {
+      song1.pause();
+    } else {
+      song1.play();
+    }
+  }
+  //simple Pause Button 
 } //End keyPressed
 //
 void mousePressed() {
