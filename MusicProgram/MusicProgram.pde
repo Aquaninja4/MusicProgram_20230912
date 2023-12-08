@@ -6,12 +6,12 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
 //Global Variables
-int loopFix =  song1.position() 
 int appWidth, appHeight, smallerDimension;
 Minim minim; //crates object to access all functions
 AudioPlayer song1; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 Boolean loopOn = false;
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
+float playPauseButtonX, playPauseButtonY, playPauseButtonWidth, playPauseButtonHeight;
 void  setup() {
   //fullScreen();
   //size(300, 700); //Portrait size
@@ -22,14 +22,19 @@ void  setup() {
   //
   //Population
   actionBarX = appWidth*0;
-  ;
-  actionBarY = appHeight*0;
+  actionBarY = appHeight-actionBarHeight ;
   //make it at the bottom
-    actionBarWidth =appWidth-1;
-  actionBarHeight =appHeight*1/15;
+  actionBarWidth =appWidth-1;
+  actionBarHeight =appHeight*1/12;
+  //
+  playPauseButtonX = appWidth*1/2-playPauseButtonWidth;
+  playPauseButtonY = appHeight*0;
+  playPauseButtonWidth = appWidth*1/15;
+  playPauseButtonHeight = appHeight*1/15;
   //
   //DIVs
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
+  rect(playPauseButtonX, playPauseButtonY, playPauseButtonWidth, playPauseButtonHeight);
   //
   minim = new Minim(this);
   String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
@@ -102,7 +107,7 @@ void keyPressed() {
       song1.play();
     }
   }
-  //simple Pause Button 
+  //simple Pause Button
 } //End keyPressed
 //
 void mousePressed() {
