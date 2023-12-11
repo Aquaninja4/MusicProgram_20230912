@@ -57,7 +57,7 @@ void  setup() {
   //must use pure java at os level to list fileName before loading Playlist
   println("Song Length (in Milliseconds)", songMetaData1.length());
   println("Song Length (in Seconds)", songMetaData1.length()/1000);
-  println("Song Length (in Minutes and Seconds)", songMetaData1.length()/); //?
+  println("Song Length (in Minutes and Seconds)", songMetaData1.length()/1000/60, "Minutes",songMetaData1.length()/1000 - (songMetaData1.length()/1000/60*60), "Seconds" );
   println("Song Title", songMetaData1.title());
   println("Author", songMetaData1.author());
   println("Composer", songMetaData1.composer());
