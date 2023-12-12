@@ -40,9 +40,9 @@ void  setup() {
   actionBarX = appWidth*0;
   actionBarY = smallerDimension-actionBarHeight;
   //
-  playPauseButtonDiameter = smallerDimension*1/10;
+  playPauseButtonDiameter = smallerDimension*1/12;
   playPauseButtonX = appWidth*1/2;
-  playPauseButtonY = actionBarY+playPauseButtonDiameter*1/2;
+  playPauseButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
   //
   //DIVs
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
