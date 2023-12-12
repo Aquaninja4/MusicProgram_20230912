@@ -36,17 +36,19 @@ void  setup() {
   songTitleHeight = appHeight*1/15;
   //
   actionBarWidth =appWidth-1;
-  actionBarHeight =appHeight*1/12;
+  actionBarHeight =appHeight*1/10;
   actionBarX = appWidth*0;
   actionBarY = smallerDimension-actionBarHeight;
   //
-  playPauseButtonDiameter = smallerDimension*1/15;
+  playPauseButtonDiameter = smallerDimension*1/10;
   playPauseButtonX = appWidth*1/2;
-  playPauseButtonY = appHeight-playPauseButtonDiameter;
+  playPauseButtonY = actionBarY+playPauseButtonDiameter*1/2;
   //
   //DIVs
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  noStroke();
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
+  stroke(1);
   ellipse(playPauseButtonX, playPauseButtonY, playPauseButtonDiameter, playPauseButtonDiameter);
   //
   minim = new Minim(this);
