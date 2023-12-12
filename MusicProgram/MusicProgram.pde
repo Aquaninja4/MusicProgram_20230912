@@ -5,6 +5,10 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
+/* to do
+ display algorithm
+ fix replay button errors
+ */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
 Minim minim; //crates object to access all functions
@@ -12,7 +16,11 @@ AudioPlayer song1; // creates "playlist" variable holding extensions WAV, AIFF, 
 AudioMetaData songMetaData1; //stores everything from .mp3 properties TAB
 Boolean loopOn = false;
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
-float playPauseButtonX, playPauseButtonY, playPauseButtonWidth, playPauseButtonHeight;
+float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
+float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
+PFont generalFont;
+color black =#000000, resetColour = #FFFFFF;
+//String  = ;
 void  setup() {
   //fullScreen();
   //size(300, 700); //Portrait size
@@ -22,20 +30,24 @@ void  setup() {
   smallerDimension = (appWidth >= appHeight) ? appHeight : appWidth;
   //
   //Population
-  actionBarX = appWidth*0;
-  actionBarY = appHeight-actionBarHeight ;
-  //make it at the bottom
+  songTitleX = appWidth*1/4;
+  songTitleY = appHeight*0;
+  songTitleWidth = appWidth*1/2;
+  songTitleHeight = appHeight*1/15;
+  //
   actionBarWidth =appWidth-1;
   actionBarHeight =appHeight*1/12;
+  actionBarX = appWidth*0;
+  actionBarY = smallerDimension-actionBarHeight;
   //
-  playPauseButtonX = appWidth*1/2-playPauseButtonWidth;
-  playPauseButtonY = appHeight*0;
-  playPauseButtonWidth = appWidth*1/15;
-  playPauseButtonHeight = appHeight*1/15;
+  playPauseButtonDiameter = smallerDimension*1/15;
+  playPauseButtonX = appWidth*1/2;
+  playPauseButtonY = appHeight-playPauseButtonDiameter;
   //
   //DIVs
+  rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
-  rect(playPauseButtonX, playPauseButtonY, playPauseButtonWidth, playPauseButtonHeight);
+  ellipse(playPauseButtonX, playPauseButtonY, playPauseButtonDiameter, playPauseButtonDiameter);
   //
   minim = new Minim(this);
   String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
@@ -57,7 +69,7 @@ void  setup() {
   //must use pure java at os level to list fileName before loading Playlist
   println("Song Length (in Milliseconds)", songMetaData1.length());
   println("Song Length (in Seconds)", songMetaData1.length()/1000);
-  println("Song Length (in Minutes and Seconds)", songMetaData1.length()/1000/60, "Minutes",songMetaData1.length()/1000 - (songMetaData1.length()/1000/60*60), "Seconds" );
+  println("Song Length (in Minutes and Seconds)", songMetaData1.length()/1000/60, "Minutes", songMetaData1.length()/1000 - (songMetaData1.length()/1000/60*60), "Seconds" );
   println("Song Title", songMetaData1.title());
   println("Author", songMetaData1.author());
   println("Composer", songMetaData1.composer());
@@ -72,9 +84,18 @@ void  setup() {
   println("Track", songMetaData1.track());
   println("Genre", songMetaData1.genre());
   println("Encoded", songMetaData1.encoded());
+  //
+  generalFont = createFont("Georgia", 55);
+  fill(black);
+  textAlign(CENTER, CENTER);
+  int size = 20;
+  textFont(generalFont, size);
+  text(songMetaData1.title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  fill(resetColour);
 } //End setup
 //
 void draw() {
+
   //if (song1.isLooping() )println(there is
 
   //
