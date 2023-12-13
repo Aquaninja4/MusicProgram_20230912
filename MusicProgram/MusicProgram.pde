@@ -12,12 +12,17 @@ import ddf.minim.ugens.*;
 //Global Variables
 int appWidth, appHeight, smallerDimension;
 Minim minim; //crates object to access all functions
-AudioPlayer song1; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
-AudioMetaData songMetaData1; //stores everything from .mp3 properties TAB
+int numberOfSongs = 4;//number of files in folder, os to count
+int numberOfSoundEffects = 1;
+int numberOfsongMetaData = 5;
+AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
+AudioPlayer [] soundEffect = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
+AudioMetaData [] songMetaData = new AudioMetaData [numberOfsongMetaData]; //stores everything from .mp3 properties TAB
 Boolean loopOn = false;
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
 float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
+float NextButtonX,NextButtonY,NextButtonWidth,NextButtonHeight;
 PFont generalFont;
 color black =#000000, resetColour = #FFFFFF;
 //String  = ;
@@ -44,12 +49,18 @@ void  setup() {
   playPauseButtonX = appWidth*1/2;
   playPauseButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
   //
+  //NextButtonX = ;
+  NextButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
+  NextButtonWidth = playPauseButtonDiameter;
+  NextButtonHeight = playPauseButtonDiameter;
+  //
   //DIVs
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   noStroke();
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
   stroke(1);
   ellipse(playPauseButtonX, playPauseButtonY, playPauseButtonDiameter, playPauseButtonDiameter);
+  rect(NextButtonX,NextButtonY,NextButtonWidth,NextButtonHeight);
   //
   minim = new Minim(this);
   String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
@@ -57,66 +68,66 @@ void  setup() {
   String extension = ".mp3";
   String pathway = "MusicUsed/";
   String path = sketchPath(pathway + yoasobiIphone);
-  song1 = minim.loadFile(path);
-  songMetaData1 = song1.getMetaData();
+  song[0] = minim.loadFile(path);
+  songMetaData[0] = song[0].getMetaData();
   //
   //
-  //song1.loop(0);
+  //song[0].loop(0);
   //
   // Meta Data PRintln Testing
   // for prototyping, print all info to the console  first
   //verifying meta data, 18 println's
-  //println("?", songMetaData1.?());
-  println("File Name", songMetaData1.fileName());
+  //println("?", songMetaData[0].?());
+  println("File Name", songMetaData[0].fileName());
   //must use pure java at os level to list fileName before loading Playlist
-  println("Song Length (in Milliseconds)", songMetaData1.length());
-  println("Song Length (in Seconds)", songMetaData1.length()/1000);
-  println("Song Length (in Minutes and Seconds)", songMetaData1.length()/1000/60, "Minutes", songMetaData1.length()/1000 - (songMetaData1.length()/1000/60*60), "Seconds" );
-  println("Song Title", songMetaData1.title());
-  println("Author", songMetaData1.author());
-  println("Composer", songMetaData1.composer());
-  println("Orchestra", songMetaData1.orchestra());
-  println("Album", songMetaData1.album());
-  println("Disc", songMetaData1.disc());
-  println("Publisher", songMetaData1.publisher());
-  println("Date Released", songMetaData1.date());
-  println("Copyright", songMetaData1.copyright());
-  println("Comments", songMetaData1.comment());
-  println("Lyrics", songMetaData1.lyrics()); //Optional: music and sing along (i have no lyrics in my songs...)
-  println("Track", songMetaData1.track());
-  println("Genre", songMetaData1.genre());
-  println("Encoded", songMetaData1.encoded());
+  println("Song Length (in Milliseconds)", songMetaData[0].length());
+  println("Song Length (in Seconds)", songMetaData[0].length()/1000);
+  println("Song Length (in Minutes and Seconds)", songMetaData[0].length()/1000/60, "Minutes", songMetaData[0].length()/1000 - (songMetaData[0].length()/1000/60*60), "Seconds" );
+  println("Song Title", songMetaData[0].title());
+  println("Author", songMetaData[0].author());
+  println("Composer", songMetaData[0].composer());
+  println("Orchestra", songMetaData[0].orchestra());
+  println("Album", songMetaData[0].album());
+  println("Disc", songMetaData[0].disc());
+  println("Publisher", songMetaData[0].publisher());
+  println("Date Released", songMetaData[0].date());
+  println("Copyright", songMetaData[0].copyright());
+  println("Comments", songMetaData[0].comment());
+  println("Lyrics", songMetaData[0].lyrics()); //Optional: music and sing along (i have no lyrics in my songs...)
+  println("Track", songMetaData[0].track());
+  println("Genre", songMetaData[0].genre());
+  println("Encoded", songMetaData[0].encoded());
   //
   generalFont = createFont("Georgia", 55);
   fill(black);
   textAlign(CENTER, CENTER);
   int size = 20;
   textFont(generalFont, size);
-  text(songMetaData1.title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  text(songMetaData[0].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   fill(resetColour);
 } //End setup
 //
 void draw() {
 
-  //if (song1.isLooping() )println(there is
+  //if (song[0].isLooping() )println(there is
 
   //
-  if ( song1.isLooping() && song1.loopCount()==-1 ) println("Looping Forever");
-  if ( song1.isPlaying() && !song1.isLooping() ) println("Playing Once");
+  if ( song[0].isLooping() && song[0].loopCount()==-1 ) println("Looping Forever");
+  if ( song[0].isPlaying() && !song[0].isLooping() ) println("Playing Once");
   //
-  //println("Song Position", song1.position()/1000, "Song Length", song1.length()/1000 );
+  println("Song Position", song[0].position()/1000, "Song Length", song[0].length()/1000 );
 } //End draw
 //
 void keyPressed() {
 
   if (key == 'L' | key == 'l') {
     /*
-    String songStr = String.valueOf(song1.position());
+    String songStr = String.valueOf(song[0].position());
      int loopFix = int(songStr);*/
-    if (song1.isLooping() && loopOn == true) {
-      song1.loop(0);
+    if (song[0].isLooping() && loopOn == true) {
+      song[0].loop(0);
     } else {
-      song1.loop(-1);
+      song[0].loop(-1);
     }
 
     if (loopOn==true) { //why does this fix mute button going to the start?????
@@ -132,28 +143,28 @@ void keyPressed() {
     //NOTE: MUTE has NO built-in PAUSE button, NO built-in rewind button
     //ERROR: if song near end of file, user will not know song is at the end
     // Know ERROR: once song plays; MUTE acts like it doesn't work
-    if (song1.isMuted()) {
+    if (song[0].isMuted()) {
       // ERROR song might not be playing
       //CATCH: ask .isPlaying() or !.isPlaying()
-      song1.unmute();
+      song[0].unmute();
     } else {
       //Possible ERROR: song could go back and go to the start; acts if its a play button
-      song1.mute();
+      song[0].mute();
     }
   } //End MUTE
   //
   //Actual .skip() allows for variable ff and fr using .position()+-
-  if (key == CODED && keyCode == RIGHT) song1.skip(1000);
-  if (key == CODED && keyCode == LEFT) song1.skip(-1000);
+  if (key == CODED && keyCode == RIGHT) song[0].skip(1000);
+  if (key == CODED && keyCode == LEFT) song[0].skip(-1000);
   //
-  if (key == CODED && keyCode == UP) song1.play(song1.length());  //song next or end
+  if (key == CODED && keyCode == UP) song[0].play(song[0].length());  //song next or end
   //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
-    if (song1.isPlaying() ) {
-      song1.pause();
+    if (song[0].isPlaying() ) {
+      song[0].pause();
     } else {
-      song1.play();
+      song[0].play();
     }
   }
   //simple Pause Button
