@@ -18,7 +18,6 @@ int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffect = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
 AudioMetaData [] songMetaData = new AudioMetaData [numberOfsongMetaData]; //stores everything from .mp3 properties TAB
-Boolean loopOn = false;
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
 float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
@@ -108,9 +107,6 @@ void  setup() {
 } //End setup
 //
 void draw() {
-
-  //if (song[0].isLooping() )println(there is
-
   //
   if ( song[0].isLooping() && song[0].loopCount()==-1 ) println("Looping Forever");
   if ( song[0].isPlaying() && !song[0].isLooping() ) println("Playing Once");
@@ -124,17 +120,12 @@ void keyPressed() {
     /*
     String songStr = String.valueOf(song[0].position());
      int loopFix = int(songStr);*/
-    if (song[0].isLooping() && loopOn == true) {
+    if (song[0].isLooping()) {
       song[0].loop(0);
     } else {
       song[0].loop(-1);
     }
 
-    if (loopOn==true) { //why does this fix mute button going to the start?????
-      loopOn = false;
-    } else {
-      loopOn = true;
-    }
   }
 
   //
