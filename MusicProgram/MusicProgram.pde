@@ -21,7 +21,7 @@ AudioMetaData [] songMetaData = new AudioMetaData [numberOfsongMetaData]; //stor
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
 float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
-float NextButtonX,NextButtonY,NextButtonWidth,NextButtonHeight;
+float nextButtonX,nextButtonY,nextButtonWidth,nextButtonHeight;
 PFont generalFont;
 color black =#000000, resetColour = #FFFFFF;
 //String  = ;
@@ -48,18 +48,23 @@ void  setup() {
   playPauseButtonX = appWidth*1/2;
   playPauseButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
   //
-  //NextButtonX = ;
-  NextButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
-  NextButtonWidth = playPauseButtonDiameter;
-  NextButtonHeight = playPauseButtonDiameter;
+  nextButtonWidth = playPauseButtonDiameter;
+  nextButtonHeight = playPauseButtonDiameter;
+  nextButtonX =  appWidth*11/20;
+  nextButtonY = smallerDimension-nextButtonWidth*1.1;
   //
+  previousButtonX
+  previousButtonY
+  previousButtonWidth
+  previousButtonHeight
   //DIVs
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   noStroke();
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
   stroke(1);
   ellipse(playPauseButtonX, playPauseButtonY, playPauseButtonDiameter, playPauseButtonDiameter);
-  rect(NextButtonX,NextButtonY,NextButtonWidth,NextButtonHeight);
+  rect(nextButtonX,nextButtonY,nextButtonWidth,nextButtonHeight);
+  rect(previousButton, previousButton,previousButton,previousButton)
   //
   minim = new Minim(this);
   String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
@@ -158,7 +163,6 @@ void keyPressed() {
       song[0].play();
     }
   }
-  //simple Pause Button
 } //End keyPressed
 //
 void mousePressed() {
