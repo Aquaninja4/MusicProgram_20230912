@@ -21,7 +21,11 @@ AudioMetaData [] songMetaData = new AudioMetaData [numberOfsongMetaData]; //stor
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
 float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
-float nextButtonX,nextButtonY,nextButtonWidth,nextButtonHeight;
+float nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight;
+float previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight;
+float FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight;
+float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
+float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
 PFont generalFont;
 color black =#000000, resetColour = #FFFFFF;
 //String  = ;
@@ -48,23 +52,41 @@ void  setup() {
   playPauseButtonX = appWidth*1/2;
   playPauseButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
   //
-  nextButtonWidth = playPauseButtonDiameter;
+  nextButtonWidth = smallerDimension*1/12;
   nextButtonHeight = playPauseButtonDiameter;
-  nextButtonX =  appWidth*11/20;
+  nextButtonX =  playPauseButtonX+nextButtonWidth;
   nextButtonY = smallerDimension-nextButtonWidth*1.1;
   //
-  previousButtonX
-  previousButtonY
-  previousButtonWidth
-  previousButtonHeight
+  previousButtonWidth = nextButtonWidth;
+  previousButtonHeight = nextButtonHeight;
+  previousButtonX = playPauseButtonX-previousButtonWidth*2;
+  previousButtonY = nextButtonY;
+  //
+  FFButtonWidth = previousButtonWidth;
+  FFButtonHeight = previousButtonHeight;
+  FFButtonX = playPauseButtonX+FFButtonWidth*2.5;
+  FFButtonY = previousButtonY;
+  //
+  rewindButtonWidth = FFButtonWidth;
+  rewindButtonHeight = FFButtonHeight;
+  rewindButtonX = playPauseButtonX-rewindButtonWidth*3.5;
+  rewindButtonY = FFButtonY;
+  //
+  loopButtonWidth = rewindButtonWidth;
+  loopButtonHeight = rewindButtonHeight;
+  loopButtonX = playPauseButtonX+loopButtonWidth*4;
+  loopButtonY = rewindButtonY;
   //DIVs
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   noStroke();
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
   stroke(1);
   ellipse(playPauseButtonX, playPauseButtonY, playPauseButtonDiameter, playPauseButtonDiameter);
-  rect(nextButtonX,nextButtonY,nextButtonWidth,nextButtonHeight);
-  rect(previousButton, previousButton,previousButton,previousButton)
+  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+  rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+  rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+  rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   //
   minim = new Minim(this);
   String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
@@ -130,7 +152,6 @@ void keyPressed() {
     } else {
       song[0].loop(-1);
     }
-
   }
 
   //
@@ -166,6 +187,12 @@ void keyPressed() {
 } //End keyPressed
 //
 void mousePressed() {
+  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseButtonDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseButtonDiameter) exit(); //doesnt work
+  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )
+  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
+  if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight );
+  if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
+  if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
 } //End mousePressed
 //
 //End MAIN Program
