@@ -1,3 +1,5 @@
+import java.io.*;
+//
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
@@ -11,13 +13,14 @@ import ddf.minim.ugens.*;
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
+File file;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 4;//number of files in folder, os to count
 int numberOfSoundEffects = 1;
-int numberOfsongMetaData = 5;
+//int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffect = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
-AudioMetaData [] songMetaData = new AudioMetaData [numberOfsongMetaData]; //stores everything from .mp3 properties TAB
+AudioMetaData [] songMetaData = new AudioMetaData [numberOfSongs]; //stores everything from .mp3 properties TAB
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
 float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
@@ -88,19 +91,59 @@ void  setup() {
   rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   //
-  minim = new Minim(this);
-  String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
-  String TwelveSpeed = "Twelve Speed - Slynk.mp3";
-  String extension = ".mp3";
+  //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
+  //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
+  //String extension = ".mp3";
   String pathway = "MusicUsed/";
-  String path = sketchPath(pathway + yoasobiIphone);
-  song[0] = minim.loadFile(path);
+  String directory = sketchPath(pathway);
+  println("Directory to Music Folder", directory);
+  file = new File(directory);
+  int fileCount = file.list().length;
+  File[] files = file.listFiles(); 
+  println("File Count of the Music Folder", fileCount);
+  println("List of all Directories of Each Song to Load into music playlist");
+  printArray(files);
+
+  for ( int i = 0; i < files.length; i++ ) {
+    println("File Name ", files[i].getName() );
+  }
+  //
+  String[] songFilePathway = new String[fileCount];
+    for (int i =0; i<files.length; i++) {
+    songFilePathway[i] = ( files[i].toString() );
+  }
+  int numberOfSongs = fileCount;
+  song = new AudioPlayer[numberOfSongs];
+  songMetaData = new AudioMetaData[numberOfSongs];
+    minim = new Minim(this);
+  //
+  for (int i=0; i<=fileCount; i++) {
+  song[i] = minim.loadFile(songFilePathway[i]);
+  songMetaData[i] = song[i].getMetaData();
+  }
+//
+  song[0] = minim.loadFile(songFilePathway[0] );
   songMetaData[0] = song[0].getMetaData();
+  //
+  song[1] = minim.loadFile(songFilePathway[1] );
+  songMetaData[1] = song[1].getMetaData();
+  //
+  song[2] = minim.loadFile(songFilePathway[2] );
+  songMetaData[2] = song[2].getMetaData();
+  //
+  song[3] = minim.loadFile(songFilePathway[3] );
+  songMetaData[3] = song[3].getMetaData();
+  //
+  //song[4] = minim.loadFile(songFilePathway[4] );
+  //println(directory);
+  //songMetaData[4] = song[4].getMetaData();
+  //
+
   //
   //
   //song[0].loop(0);
   //
-  // Meta Data PRintln Testing
+  // Meta Data Println Testing
   // for prototyping, print all info to the console  first
   //verifying meta data, 18 println's
   //println("?", songMetaData[0].?());
@@ -189,7 +232,7 @@ void keyPressed() {
 void mousePressed() {
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseButtonDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseButtonDiameter) exit(); //doesnt work
   if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )
-  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
+    if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight );
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
   if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
