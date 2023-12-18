@@ -99,9 +99,9 @@ void  setup() {
   println("Directory to Music Folder", directory);
   file = new File(directory);
   int fileCount = file.list().length;
-  File[] files = file.listFiles(); 
-  println("File Count of the Music Folder", fileCount);
-  println("List of all Directories of Each Song to Load into music playlist");
+  File[] files = file.listFiles();
+  println("File Count of the Music Folder:", fileCount);
+  println("List of all Directories of Each Song to Load into music playlist:");
   printArray(files);
 
   for ( int i = 0; i < files.length; i++ ) {
@@ -109,19 +109,20 @@ void  setup() {
   }
   //
   String[] songFilePathway = new String[fileCount];
-    for (int i =0; i<files.length; i++) {
+  for (int i =0; i<files.length; i++) {
     songFilePathway[i] = ( files[i].toString() );
   }
   int numberOfSongs = fileCount;
   song = new AudioPlayer[numberOfSongs];
   songMetaData = new AudioMetaData[numberOfSongs];
-    minim = new Minim(this);
+  minim = new Minim(this);
   //
-  for (int i=0; i<=fileCount; i++) {
-  song[i] = minim.loadFile(songFilePathway[i]);
-  songMetaData[i] = song[i].getMetaData();
+  for (int i=0; i<fileCount; i++) {
+    song[i]= minim.loadFile( songFilePathway[i] );
+    songMetaData[i] = song[i].getMetaData();
   }
-//
+  //
+  //
   song[0] = minim.loadFile(songFilePathway[0] );
   songMetaData[0] = song[0].getMetaData();
   //
@@ -135,10 +136,8 @@ void  setup() {
   songMetaData[3] = song[3].getMetaData();
   //
   //song[4] = minim.loadFile(songFilePathway[4] );
-  //println(directory);
   //songMetaData[4] = song[4].getMetaData();
   //
-
   //
   //
   //song[0].loop(0);
@@ -217,8 +216,6 @@ void keyPressed() {
   if (key == CODED && keyCode == RIGHT) song[0].skip(1000);
   if (key == CODED && keyCode == LEFT) song[0].skip(-1000);
   //
-  if (key == CODED && keyCode == UP) song[0].play(song[0].length());  //song next or end
-  //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
     if (song[0].isPlaying() ) {
@@ -227,6 +224,9 @@ void keyPressed() {
       song[0].play();
     }
   }
+  if (key == CODED && keyCode == UP)   0 =fileCount-1;
+  if (key == CODED && keyCode == DOWN)0 = fileCount+1;
+  
 } //End keyPressed
 //
 void mousePressed() {
