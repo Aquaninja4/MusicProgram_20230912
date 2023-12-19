@@ -13,13 +13,13 @@ import ddf.minim.ugens.*;
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
-File file;
+File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
-int numberOfSongs = 4;//number of files in folder, os to count
+int numberOfSongs = 4;//number of musicFiles in folder, os to count
 int numberOfSoundEffects = 1;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
-AudioPlayer [] soundEffect = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
+AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
 AudioMetaData [] songMetaData = new AudioMetaData [numberOfSongs]; //stores everything from .mp3 properties TAB
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
 float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
@@ -94,30 +94,31 @@ void  setup() {
   //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
   //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
   //String extension = ".mp3";
+  //music load
   String pathway = "MusicUsed/";
   String directory = sketchPath(pathway);
   println("Directory to Music Folder", directory);
-  file = new File(directory);
-  int fileCount = file.list().length;
-  File[] files = file.listFiles();
-  println("File Count of the Music Folder:", fileCount);
+  musicFolder = new File(directory);
+  int musicFileCount = musicFolder.list().length;
+  File[] musicFiles = musicFolder.listFiles();
+  println("File Count of the Music Folder:", musicFileCount);
   println("List of all Directories of Each Song to Load into music playlist:");
-  printArray(files);
+  printArray(musicFiles);
 
-  for ( int i = 0; i < files.length; i++ ) {
-    println("File Name ", files[i].getName() );
+  for ( int i = 0; i < musicFiles.length; i++ ) {
+    println("Music File Name ", musicFiles[i].getName() );
   }
   //
-  String[] songFilePathway = new String[fileCount];
-  for (int i =0; i<files.length; i++) {
-    songFilePathway[i] = ( files[i].toString() );
+  String[] songFilePathway = new String[musicFileCount];
+  for (int i =0; i<musicFiles.length; i++) {
+    songFilePathway[i] = ( musicFiles[i].toString() );
   }
-  int numberOfSongs = fileCount;
+  int numberOfSongs = musicFileCount;
   song = new AudioPlayer[numberOfSongs];
   songMetaData = new AudioMetaData[numberOfSongs];
   minim = new Minim(this);
   //
-  for (int i=0; i<fileCount; i++) {
+  for (int i=0; i<musicFileCount; i++) {
     song[i]= minim.loadFile( songFilePathway[i] );
     songMetaData[i] = song[i].getMetaData();
   }
@@ -138,16 +139,35 @@ void  setup() {
   //song[4] = minim.loadFile(songFilePathway[4] );
   //songMetaData[4] = song[4].getMetaData();
   //
+  //End music
   //
+
+  // Sound Effects Load
+  String soundEffectPathway = "SoundUsed/";
+  String soundEffectDirectory = sketchPath(soundEffectPathway);
+  soundEffectFolder = new File(soundEffectDirectory);
+  int soundEffectFileCount = soundEffectFolder.list().length;
+  File[] soundEffectFiles = soundEffectFolder.listFiles(); //String of Full Directies
+  String[] soundEffectFilePathway = new String[soundEffectFileCount];
+  for ( int i = 0; i < soundEffectFiles.length; i++ ) {
+    soundEffectFilePathway[i] = ( soundEffectFiles[i].toString() );
+  }
+  //Re-execute Playlist Population, similar to DIV Population
+  numberOfSoundEffects = soundEffectFileCount; //Placeholder Only, reexecute lines after fileCount Known
+  soundEffects = new AudioPlayer[numberOfSoundEffects]; //song is now similar to song1
+  for ( int i=0; i<soundEffectFileCount; i++ ) {
+    soundEffects[i]= minim.loadFile( soundEffectFilePathway[i] );
+  } //End Music Load
   //
-  //song[0].loop(0);
+
+  minim = new Minim(this);
   //
   // Meta Data Println Testing
   // for prototyping, print all info to the console  first
   //verifying meta data, 18 println's
   //println("?", songMetaData[0].?());
   println("File Name", songMetaData[0].fileName());
-  //must use pure java at os level to list fileName before loading Playlist
+  //must use pure java at os level to list musicFileName before loading Playlist
   println("Song Length (in Milliseconds)", songMetaData[0].length());
   println("Song Length (in Seconds)", songMetaData[0].length()/1000);
   println("Song Length (in Minutes and Seconds)", songMetaData[0].length()/1000/60, "Minutes", songMetaData[0].length()/1000 - (songMetaData[0].length()/1000/60*60), "Seconds" );
@@ -177,6 +197,7 @@ void  setup() {
 //
 void draw() {
   //
+
   if ( song[0].isLooping() && song[0].loopCount()==-1 ) println("Looping Forever");
   if ( song[0].isPlaying() && !song[0].isLooping() ) println("Playing Once");
   //
@@ -184,23 +205,30 @@ void draw() {
 } //End draw
 //
 void keyPressed() {
+  if (key=='p' || key=='p' ) {
+    soundEffects[0].play();
+  }
 
   if (key == 'L' | key == 'l') {
-    /*
+
     String songStr = String.valueOf(song[0].position());
-     int loopFix = int(songStr);*/
+    int loopFix = int(songStr);
     if (song[0].isLooping()) {
       song[0].loop(0);
+      delay(8000);
+      song[0].play(loopFix);
     } else {
       song[0].loop(-1);
+      delay(8000);
+      song[0].play(loopFix); 
     }
   }
 
   //
   if (key == 'M' | key == 'm') {//MUTE Button
-    //MUTE Behavior: stops electricy to speakers, does not stop file
+    //MUTE Behavior: stops electricy to speakers, does not stop musicFile
     //NOTE: MUTE has NO built-in PAUSE button, NO built-in rewind button
-    //ERROR: if song near end of file, user will not know song is at the end
+    //ERROR: if song near end of musicFile, user will not know song is at the end
     // Know ERROR: once song plays; MUTE acts like it doesn't work
     if (song[0].isMuted()) {
       // ERROR song might not be playing
@@ -224,9 +252,8 @@ void keyPressed() {
       song[0].play();
     }
   }
-  if (key == CODED && keyCode == UP)   0 =fileCount-1;
-  if (key == CODED && keyCode == DOWN)0 = fileCount+1;
-  
+  //if (key == CODED && keyCode == UP)   0 =musicFileCount-1;
+  //if (key == CODED && keyCode == DOWN)0 = musicFileCount+1;
 } //End keyPressed
 //
 void mousePressed() {
