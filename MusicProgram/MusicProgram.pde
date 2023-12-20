@@ -10,13 +10,14 @@ import ddf.minim.ugens.*;
 /* to do
  display algorithm
  fix replay button errors
+ loop 1 specific song after pressing loop button twice after when loop is false using int ++-es
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
-int numberOfSongs = 4;//number of musicFiles in folder, os to count
-int numberOfSoundEffects = 1;
+int numberOfSongs = 4, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
+Boolean loopOn = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -124,8 +125,8 @@ void  setup() {
   }
   //
   //
-  song[0] = minim.loadFile(songFilePathway[0] );
-  songMetaData[0] = song[0].getMetaData();
+  song[currentSong] = minim.loadFile(songFilePathway[currentSong] );
+  songMetaData[currentSong] = song[currentSong].getMetaData();
   //
   song[1] = minim.loadFile(songFilePathway[1] );
   songMetaData[1] = song[1].getMetaData();
@@ -165,62 +166,71 @@ void  setup() {
   // Meta Data Println Testing
   // for prototyping, print all info to the console  first
   //verifying meta data, 18 println's
-  //println("?", songMetaData[0].?());
-  println("File Name", songMetaData[0].fileName());
+  //println("?", songMetaData[currentSong].?());
+  println("File Name", songMetaData[currentSong].fileName());
   //must use pure java at os level to list musicFileName before loading Playlist
-  println("Song Length (in Milliseconds)", songMetaData[0].length());
-  println("Song Length (in Seconds)", songMetaData[0].length()/1000);
-  println("Song Length (in Minutes and Seconds)", songMetaData[0].length()/1000/60, "Minutes", songMetaData[0].length()/1000 - (songMetaData[0].length()/1000/60*60), "Seconds" );
-  println("Song Title", songMetaData[0].title());
-  println("Author", songMetaData[0].author());
-  println("Composer", songMetaData[0].composer());
-  println("Orchestra", songMetaData[0].orchestra());
-  println("Album", songMetaData[0].album());
-  println("Disc", songMetaData[0].disc());
-  println("Publisher", songMetaData[0].publisher());
-  println("Date Released", songMetaData[0].date());
-  println("Copyright", songMetaData[0].copyright());
-  println("Comments", songMetaData[0].comment());
-  println("Lyrics", songMetaData[0].lyrics()); //Optional: music and sing along (i have no lyrics in my songs...)
-  println("Track", songMetaData[0].track());
-  println("Genre", songMetaData[0].genre());
-  println("Encoded", songMetaData[0].encoded());
+  println("Song Length (in Milliseconds)", songMetaData[currentSong].length());
+  println("Song Length (in Seconds)", songMetaData[currentSong].length()/1000);
+  println("Song Length (in Minutes and Seconds)", songMetaData[currentSong].length()/1000/60, "Minutes", songMetaData[currentSong].length()/1000 - (songMetaData[currentSong].length()/1000/60*60), "Seconds" );
+  println("Song Title", songMetaData[currentSong].title());
+  println("Author", songMetaData[currentSong].author());
+  println("Composer", songMetaData[currentSong].composer());
+  println("Orchestra", songMetaData[currentSong].orchestra());
+  println("Album", songMetaData[currentSong].album());
+  println("Disc", songMetaData[currentSong].disc());
+  println("Publisher", songMetaData[currentSong].publisher());
+  println("Date Released", songMetaData[currentSong].date());
+  println("Copyright", songMetaData[currentSong].copyright());
+  println("Comments", songMetaData[currentSong].comment());
+  println("Lyrics", songMetaData[currentSong].lyrics()); //Optional: music and sing along (i have no lyrics in my songs...)
+  println("Track", songMetaData[currentSong].track());
+  println("Genre", songMetaData[currentSong].genre());
+  println("Encoded", songMetaData[currentSong].encoded());
   //
-  generalFont = createFont("Georgia", 55);
+  //random beginning song
+  currentSong = int(random(0, numberOfSongs-1)); //casting truncates the decimal
+     generalFont = createFont("Georgia", 55);
   fill(black);
   textAlign(CENTER, CENTER);
   int size = 20;
   textFont(generalFont, size);
-  text(songMetaData[0].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  text(songMetaData[currentSong].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   fill(resetColour);
 } //End setup
 //
 void draw() {
   //
-
-  if ( song[0].isLooping() && song[0].loopCount()==-1 ) println("Looping Forever");
-  if ( song[0].isPlaying() && !song[0].isLooping() ) println("Playing Once");
+  if ( song[currentSong].isLooping() && song[currentSong].loopCount()==-1 ) println("Looping Forever");
+  if ( song[currentSong].isPlaying() && !song[currentSong].isLooping() ) println("Playing Once");
   //
-  println("Song Position", song[0].position()/1000, "Song Length", song[0].length()/1000 );
+  println("Song Position", song[currentSong].position()/1000, "Song Length", song[currentSong].length()/1000 );
+
+  //autoplay, next song automatically plays
+  if (song[currentSong].isPlaying()) {
+    //empty if, true
+  } else {
+    //current song at the end of FILE
+    song[currentSong].rewind();
+    currentSong=currentSong+1; //make +1 random for shuffle
+    song[currentSong].play();
+  }
 } //End draw
 //
 void keyPressed() {
   if (key=='p' || key=='p' ) {
-    soundEffects[0].play();
+    soundEffects[currentSong].play();
   }
 
   if (key == 'L' | key == 'l') {
 
-    String songStr = String.valueOf(song[0].position());
+    String songStr = String.valueOf(song[currentSong].position());
     int loopFix = int(songStr);
-    if (song[0].isLooping()) {
-      song[0].loop(0);
-      delay(8000);
-      song[0].play(loopFix);
+    if (song[currentSong].isLooping()) {
+      song[currentSong].loop(0);
+      //song[currentSong].play(loopFix);
     } else {
-      song[0].loop(-1);
-      delay(8000);
-      song[0].play(loopFix); 
+      song[currentSong].loop(-1);
+      //song[currentSong].play(loopFix);
     }
   }
 
@@ -230,30 +240,37 @@ void keyPressed() {
     //NOTE: MUTE has NO built-in PAUSE button, NO built-in rewind button
     //ERROR: if song near end of musicFile, user will not know song is at the end
     // Know ERROR: once song plays; MUTE acts like it doesn't work
-    if (song[0].isMuted()) {
+    if (song[currentSong].isMuted()) {
       // ERROR song might not be playing
       //CATCH: ask .isPlaying() or !.isPlaying()
-      song[0].unmute();
+      song[currentSong].unmute();
     } else {
       //Possible ERROR: song could go back and go to the start; acts if its a play button
-      song[0].mute();
+      song[currentSong].mute();
     }
   } //End MUTE
   //
   //Actual .skip() allows for variable ff and fr using .position()+-
-  if (key == CODED && keyCode == RIGHT) song[0].skip(1000);
-  if (key == CODED && keyCode == LEFT) song[0].skip(-1000);
+  if (key == CODED && keyCode == RIGHT) song[currentSong].skip(1000);
+  if (key == CODED && keyCode == LEFT) song[currentSong].skip(-1000);
   //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
-    if (song[0].isPlaying() ) {
-      song[0].pause();
+    if (song[currentSong].isPlaying() ) {
+      song[currentSong].pause();
     } else {
-      song[0].play();
+      song[currentSong].play();
     }
   }
-  //if (key == CODED && keyCode == UP)   0 =musicFileCount-1;
-  //if (key == CODED && keyCode == DOWN)0 = musicFileCount+1;
+  //simple Next and previous Buttons
+  if (key==CODED && keyCode == UP) {//PREVIOUS
+   song[currentSong].pause();
+   song[currentSong].rewind();
+   currentSong=currentSong-1;
+   song[currentSong].play();
+  }
+  if (key==CODED && keyCode == DOWN) {//NEXT
+  } 
 } //End keyPressed
 //
 void mousePressed() {
