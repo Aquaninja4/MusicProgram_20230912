@@ -16,8 +16,8 @@ import ddf.minim.ugens.*;
 int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
-int numberOfSongs = 4, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean loopOn = false;
+int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
+Boolean loopOn = false, stopBoolean = false, pauseBoolean = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -127,19 +127,6 @@ void  setup() {
   //
   song[currentSong] = minim.loadFile(songFilePathway[currentSong] );
   songMetaData[currentSong] = song[currentSong].getMetaData();
-  //
-  song[1] = minim.loadFile(songFilePathway[1] );
-  songMetaData[1] = song[1].getMetaData();
-  //
-  song[2] = minim.loadFile(songFilePathway[2] );
-  songMetaData[2] = song[2].getMetaData();
-  //
-  song[3] = minim.loadFile(songFilePathway[3] );
-  songMetaData[3] = song[3].getMetaData();
-  //
-  //song[4] = minim.loadFile(songFilePathway[4] );
-  //songMetaData[4] = song[4].getMetaData();
-  //
   //End music
   //
 
@@ -189,7 +176,7 @@ void  setup() {
   //
   //random beginning song
   currentSong = int(random(0, numberOfSongs-1)); //casting truncates the decimal
-     generalFont = createFont("Georgia", 55);
+  generalFont = createFont("Georgia", 55);
   fill(black);
   textAlign(CENTER, CENTER);
   int size = 20;
@@ -200,20 +187,45 @@ void  setup() {
 //
 void draw() {
   //
-  if ( song[currentSong].isLooping() && song[currentSong].loopCount()==-1 ) println("Looping Forever");
-  if ( song[currentSong].isPlaying() && !song[currentSong].isLooping() ) println("Playing Once");
+  if ( song[currentSong].isPlaying()  && loopOn==true ) println("Looping Forever");
+  if ( song[currentSong].isPlaying() && loopOn==false ) println("Playing Once");
   //
   println("Song Position", song[currentSong].position()/1000, "Song Length", song[currentSong].length()/1000 );
+  println(currentSong);
 
   //autoplay, next song automatically plays
-  if (song[currentSong].isPlaying()) {
-    //empty if, true
+  if ( song[currentSong].isPlaying() ) {
+    if ( stopBoolean == true ) song[currentSong].pause();
   } else {
-    //current song at the end of FILE
-    song[currentSong].rewind();
-    currentSong=currentSong+1; //make +1 random for shuffle
-    song[currentSong].play();
+    //currentSong at end of FILE
+    if ( stopBoolean == true ) {
+      song[currentSong].pause();
+    } else {
+      if ( song[currentSong].position() < 10000  ) {
+        song[currentSong].rewind();
+        currentSong = currentSong + 1;
+        song[currentSong].play();
+      } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.2 ) {
+        song[currentSong].rewind();
+        currentSong = currentSong + 1;
+        song[currentSong].play();
+      } else {
+        song[currentSong].rewind();
+        song[currentSong].play();
+      }
+    }
   }
+
+  //
+  /*
+    if ( currentSong<1  ) {
+   currentSong=1;
+   } else if (currentSong>4) {
+   currentSong=currentSong;
+   } else {
+   //Empty Else
+   }
+   */
 } //End draw
 //
 void keyPressed() {
@@ -221,18 +233,21 @@ void keyPressed() {
     soundEffects[currentSong].play();
   }
 
-  if (key == 'L' | key == 'l') {
 
-    String songStr = String.valueOf(song[currentSong].position());
-    int loopFix = int(songStr);
-    if (song[currentSong].isLooping()) {
-      song[currentSong].loop(0);
-      //song[currentSong].play(loopFix);
+  if (key == 'L' | key == 'l') {
+    if (loopOn==true) {
+      loopOn = false;
     } else {
-      song[currentSong].loop(-1);
-      //song[currentSong].play(loopFix);
+      loopOn = true;
     }
   }
+
+  if (loopOn == true && !song[currentSong].isPlaying()) {
+    song[currentSong].rewind();
+    song[currentSong].play();
+  } else {
+  }
+
 
   //
   if (key == 'M' | key == 'm') {//MUTE Button
@@ -256,27 +271,50 @@ void keyPressed() {
   //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
-    if (song[currentSong].isPlaying() ) {
+     if (song[currentSong].isPlaying() ) {
+      if (stopBoolean == true) {
+        stopBoolean = false;
+      } else {
+        pauseBoolean=true;
+      }
+      if (pauseBoolean=true) {
+        pauseBoolean=false;
+      } else { 
+        pauseBoolean=true;
+      }
+    //} else {
+      //song[currentSong].play();
+    }
+ }
+  //simple Next and previous Buttons
+  if (key==CODED && keyCode == UP) {//NEXT
+    song[currentSong].pause();
+    song[currentSong].rewind();
+    currentSong=currentSong+1;
+    song[currentSong].play();
+  }
+  if (key==CODED && keyCode == DOWN) {//PREVIOUS
+    song[currentSong].pause();
+    song[currentSong].rewind();
+    currentSong=currentSong-1;
+    song[currentSong].play();
+  }
+  //
+  //simple stop
+  if ( key=='S' | key=='s' ) {
+    if ( song[currentSong].isPlaying() ) {
       song[currentSong].pause();
+      stopBoolean = true;
     } else {
-      song[currentSong].play();
+      stopBoolean = false;
     }
   }
-  //simple Next and previous Buttons
-  if (key==CODED && keyCode == UP) {//PREVIOUS
-   song[currentSong].pause();
-   song[currentSong].rewind();
-   currentSong=currentSong-1;
-   song[currentSong].play();
-  }
-  if (key==CODED && keyCode == DOWN) {//NEXT
-  } 
 } //End keyPressed
 //
 void mousePressed() {
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseButtonDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseButtonDiameter) exit(); //doesnt work
-  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )
-    if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
+  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight );
+  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight );
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
   if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
