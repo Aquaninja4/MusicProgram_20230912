@@ -96,28 +96,28 @@ void  setup() {
   //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
   //String extension = ".mp3";
   //music load
+  minim = new Minim(this);
+  //
   String pathway = "MusicUsed/";
   String directory = sketchPath(pathway);
   println("Directory to Music Folder", directory);
   musicFolder = new File(directory);
   int musicFileCount = musicFolder.list().length;
   File[] musicFiles = musicFolder.listFiles();
-  println("File Count of the Music Folder:", musicFileCount);
-  println("List of all Directories of Each Song to Load into music playlist:");
-  printArray(musicFiles);
-
-  for ( int i = 0; i < musicFiles.length; i++ ) {
-    println("Music File Name ", musicFiles[i].getName() );
-  }
-  //
   String[] songFilePathway = new String[musicFileCount];
   for (int i =0; i<musicFiles.length; i++) {
     songFilePathway[i] = ( musicFiles[i].toString() );
   }
-  int numberOfSongs = musicFileCount;
+  println("File Count of the Music Folder:", musicFileCount);
+  println("List of all Directories of Each Song to Load into music playlist:");
+  printArray(musicFiles);
+  numberOfSongs = musicFileCount;
   song = new AudioPlayer[numberOfSongs];
   songMetaData = new AudioMetaData[numberOfSongs];
-  minim = new Minim(this);
+  //
+  for ( int i = 0; i < musicFiles.length; i++ ) {
+    println("Music File Name ", musicFiles[i].getName() );
+  }
   //
   for (int i=0; i<musicFileCount; i++) {
     song[i]= minim.loadFile( songFilePathway[i] );
@@ -191,7 +191,7 @@ void draw() {
   if ( song[currentSong].isPlaying() && loopOn==false ) println("Playing Once");
   //
   println("Song Position", song[currentSong].position()/1000, "Song Length", song[currentSong].length()/1000 );
-  println(currentSong);
+  println(currentSong, numberOfSongs);
 
   //autoplay, next song automatically plays
   if ( song[currentSong].isPlaying() ) {
@@ -205,7 +205,7 @@ void draw() {
         song[currentSong].rewind();
         currentSong = currentSong + 1;
         song[currentSong].play();
-      } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.2 ) {
+      } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 ) {
         song[currentSong].rewind();
         currentSong = currentSong + 1;
         song[currentSong].play();
@@ -221,7 +221,7 @@ void draw() {
     if ( currentSong<1  ) {
    currentSong=1;
    } else if (currentSong>4) {
-   currentSong=currentSong;
+   currentSong=4;
    } else {
    //Empty Else
    }
@@ -242,13 +242,20 @@ void keyPressed() {
     }
   }
 
+  /* // loop playlist
+ if (song[currentSong].isPlaying() ) {
+   if (currentSong >= numberOfSongs) {
+   song[0].play();}
+   */
+
   if (loopOn == true && !song[currentSong].isPlaying()) {
     song[currentSong].rewind();
     song[currentSong].play();
   } else {
   }
+  
 
-
+   
   //
   if (key == 'M' | key == 'm') {//MUTE Button
     //MUTE Behavior: stops electricy to speakers, does not stop musicFile
@@ -271,7 +278,7 @@ void keyPressed() {
   //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
-     if (song[currentSong].isPlaying() ) {
+    if (song[currentSong].isPlaying() ) {
       if (stopBoolean == true) {
         stopBoolean = false;
       } else {
@@ -279,13 +286,13 @@ void keyPressed() {
       }
       if (pauseBoolean=true) {
         pauseBoolean=false;
-      } else { 
+      } else {
         pauseBoolean=true;
       }
-    //} else {
+      //} else {
       //song[currentSong].play();
     }
- }
+  }
   //simple Next and previous Buttons
   if (key==CODED && keyCode == UP) {//NEXT
     song[currentSong].pause();
