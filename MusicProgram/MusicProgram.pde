@@ -193,6 +193,14 @@ void draw() {
   println("Song Position", song[currentSong].position()/1000, "Song Length", song[currentSong].length()/1000 );
   println(currentSong, numberOfSongs);
 
+  if ( currentSong<0  ) {
+    currentSong=0;
+  } else if (currentSong>3) {
+    currentSong=3;
+  } else {
+    //Empty Else
+  }
+
   //autoplay, next song automatically plays
   if ( song[currentSong].isPlaying() ) {
     if ( stopBoolean == true ) song[currentSong].pause();
@@ -217,15 +225,6 @@ void draw() {
   }
 
   //
-  /*
-    if ( currentSong<1  ) {
-   currentSong=1;
-   } else if (currentSong>4) {
-   currentSong=4;
-   } else {
-   //Empty Else
-   }
-   */
 } //End draw
 //
 void keyPressed() {
@@ -243,7 +242,7 @@ void keyPressed() {
   }
 
   /* // loop playlist
- if (song[currentSong].isPlaying() ) {
+   if (song[currentSong].isPlaying() ) {
    if (currentSong >= numberOfSongs) {
    song[0].play();}
    */
@@ -253,9 +252,9 @@ void keyPressed() {
     song[currentSong].play();
   } else {
   }
-  
 
-   
+
+
   //
   if (key == 'M' | key == 'm') {//MUTE Button
     //MUTE Behavior: stops electricy to speakers, does not stop musicFile
@@ -294,17 +293,35 @@ void keyPressed() {
     }
   }
   //simple Next and previous Buttons
+
+
+  if ( currentSong<0  ) {
+    currentSong=0;
+  } else if (currentSong>3) {
+    currentSong=3;
+  } else {
+    //Empty Else
+  }
+
   if (key==CODED && keyCode == UP) {//NEXT
-    song[currentSong].pause();
-    song[currentSong].rewind();
-    currentSong=currentSong+1;
-    song[currentSong].play();
+    if (currentSong > 2) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong=currentSong+1;
+      song[currentSong].play();
+    } else {
+      //empty
+    }
   }
   if (key==CODED && keyCode == DOWN) {//PREVIOUS
-    song[currentSong].pause();
-    song[currentSong].rewind();
-    currentSong=currentSong-1;
-    song[currentSong].play();
+    if (currentSong < 0) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong=currentSong-1;
+      song[currentSong].play();
+    } else {
+      //empty
+    }
   }
   //
   //simple stop
