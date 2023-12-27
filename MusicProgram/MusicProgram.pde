@@ -190,30 +190,32 @@ void draw() {
   if ( song[currentSong].isPlaying()  && loopOn==true ) println("Looping Forever");
   if ( song[currentSong].isPlaying() && loopOn==false ) println("Playing Once");
   //
-  println("Song Position", song[currentSong].position()/1000, "Song Length", song[currentSong].length()/1000 );
-  println(currentSong, numberOfSongs);
-
-  if ( currentSong<0  ) {
-    currentSong=0;
-  } else if (currentSong>3) {
-    currentSong=3;
+  println("Song Position:", song[currentSong].position()/1000, "Song Length:", song[currentSong].length()/1000 );
+  println("Song Playing:", songMetaData[currentSong].title());
+  //
+    if (loopOn == true && !song[currentSong].isPlaying()) {
+    song[currentSong].rewind();
+    song[currentSong].play();
   } else {
-    //Empty Else
   }
-
+  //
   //autoplay, next song automatically plays
-  if ( song[currentSong].isPlaying() ) {
-    if ( stopBoolean == true ) song[currentSong].pause();
+ if ( song[currentSong].isPlaying() ) {
+    if ( stopBoolean==true || pauseBoolean==true ) {
+      song[currentSong].pause();
+    }
+    if ( stopBoolean==true ) song[currentSong].rewind();
   } else {
     //currentSong at end of FILE
     if ( stopBoolean == true ) {
       song[currentSong].pause();
     } else {
-      if ( song[currentSong].position() < 10000  ) {
+      if ( song[currentSong].position() < 10000 && currentSong < numberOfSongs-1)  {
         song[currentSong].rewind();
         currentSong = currentSong + 1;
         song[currentSong].play();
-      } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 ) {
+        
+      } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 && currentSong < numberOfSongs-1) {
         song[currentSong].rewind();
         currentSong = currentSong + 1;
         song[currentSong].play();
@@ -247,11 +249,6 @@ void keyPressed() {
    song[0].play();}
    */
 
-  if (loopOn == true && !song[currentSong].isPlaying()) {
-    song[currentSong].rewind();
-    song[currentSong].play();
-  } else {
-  }
 
 
 
@@ -294,33 +291,20 @@ void keyPressed() {
   }
   //simple Next and previous Buttons
 
-
-  if ( currentSong<0  ) {
-    currentSong=0;
-  } else if (currentSong>3) {
-    currentSong=3;
-  } else {
-    //Empty Else
-  }
-
   if (key==CODED && keyCode == UP) {//NEXT
-    if (currentSong > 2) {
+    if (currentSong < numberOfSongs-1) {
       song[currentSong].pause();
       song[currentSong].rewind();
       currentSong=currentSong+1;
       song[currentSong].play();
-    } else {
-      //empty
-    }
+    } 
   }
   if (key==CODED && keyCode == DOWN) {//PREVIOUS
-    if (currentSong < 0) {
+    if (currentSong > 0) {
       song[currentSong].pause();
       song[currentSong].rewind();
       currentSong=currentSong-1;
       song[currentSong].play();
-    } else {
-      //empty
     }
   }
   //
