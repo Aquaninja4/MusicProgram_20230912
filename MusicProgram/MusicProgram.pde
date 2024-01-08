@@ -23,7 +23,7 @@ AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" vari
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
 AudioMetaData [] songMetaData = new AudioMetaData [numberOfSongs]; //stores everything from .mp3 properties TAB
 float actionBarX, actionBarY, actionBarWidth, actionBarHeight;
-float playPauseButtonX, playPauseButtonY, playPauseButtonDiameter;
+float playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseButtonX, playPauseButtonY;
 float songTitleX, songTitleY, songTitleWidth, songTitleHeight;
 float nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight;
 float previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight;
@@ -52,45 +52,50 @@ void  setup() {
   actionBarX = appWidth*0;
   actionBarY = smallerDimension-actionBarHeight;
   //
-  playPauseButtonDiameter = smallerDimension*1/12;
-  playPauseButtonX = appWidth*1/2;
-  playPauseButtonY = actionBarY+playPauseButtonDiameter*1/1.65;
+  //
+  playPauseDiameter = smallerDimension*1/12;
+  playPauseElipseX = appWidth*1/2;
+  playPauseElipseY = actionBarY+playPauseDiameter*1/1.65;
+  //
+  playPauseButtonX = playPauseElipseX-playPauseDiameter/2;
+  playPauseButtonY = smallerDimension-playPauseDiameter*1.1;
   //
   nextButtonWidth = smallerDimension*1/12;
-  nextButtonHeight = playPauseButtonDiameter;
-  nextButtonX =  playPauseButtonX+nextButtonWidth;
-  nextButtonY = smallerDimension-nextButtonWidth*1.1;
+  nextButtonHeight = playPauseDiameter;
+  nextButtonX =  playPauseElipseX+nextButtonWidth;
+  nextButtonY = playPauseButtonY;
   //
   previousButtonWidth = nextButtonWidth;
   previousButtonHeight = nextButtonHeight;
-  previousButtonX = playPauseButtonX-previousButtonWidth*2;
+  previousButtonX = playPauseElipseX-previousButtonWidth*2;
   previousButtonY = nextButtonY;
   //
   FFButtonWidth = previousButtonWidth;
   FFButtonHeight = previousButtonHeight;
-  FFButtonX = playPauseButtonX+FFButtonWidth*2.5;
+  FFButtonX = playPauseElipseX+FFButtonWidth*2.5;
   FFButtonY = previousButtonY;
   //
   rewindButtonWidth = FFButtonWidth;
   rewindButtonHeight = FFButtonHeight;
-  rewindButtonX = playPauseButtonX-rewindButtonWidth*3.5;
+  rewindButtonX = playPauseElipseX-rewindButtonWidth*3.5;
   rewindButtonY = FFButtonY;
   //
   loopButtonWidth = rewindButtonWidth;
   loopButtonHeight = rewindButtonHeight;
-  loopButtonX = playPauseButtonX+loopButtonWidth*4;
+  loopButtonX = playPauseElipseX+loopButtonWidth*4;
   loopButtonY = rewindButtonY;
   //DIVs
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   noStroke();
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
   stroke(1);
-  ellipse(playPauseButtonX, playPauseButtonY, playPauseButtonDiameter, playPauseButtonDiameter);
+  ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
   rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
   rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
   rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
   //
   //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
   //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
@@ -320,8 +325,9 @@ void keyPressed() {
 } //End keyPressed
 //
 void mousePressed() {
-  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseButtonDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseButtonDiameter) exit(); //doesnt work
-  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight );
+  
+  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit(); //doesnt work
+  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )exit();
   if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight );
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
