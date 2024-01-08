@@ -95,7 +95,12 @@ void  setup() {
   rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
   rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
-  rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
+  //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
+  //
+  //Images
+  String imagePathway = "ImagesUsed/";
+  String imageDirectory = sketchPath(imagePathway);
+  wasd
   //
   //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
   //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
@@ -103,10 +108,10 @@ void  setup() {
   //music load
   minim = new Minim(this);
   //
-  String pathway = "MusicUsed/";
-  String directory = sketchPath(pathway);
-  println("Directory to Music Folder", directory);
-  musicFolder = new File(directory);
+  String musicPathway = "MusicUsed/";
+  String musicDirectory = sketchPath(musicPathway);
+  println("Directory to Music Folder", musicDirectory);
+  musicFolder = new File(musicDirectory);
   int musicFileCount = musicFolder.list().length;
   File[] musicFiles = musicFolder.listFiles();
   String[] songFilePathway = new String[musicFileCount];
@@ -327,7 +332,7 @@ void keyPressed() {
 void mousePressed() {
   
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit(); //doesnt work
-  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )exit();
+  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )
   if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight );
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
