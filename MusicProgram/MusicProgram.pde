@@ -8,9 +8,11 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
 /* to do
+turn off/on autoplay
+loop to back of playlist
  display algorithm
- fix replay button errors
- loop 1 specific song after pressing loop button twice after when loop is false using int ++-es
+ fix button errors
+
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
@@ -30,8 +32,10 @@ float previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeigh
 float FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight;
 float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
 float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
+PImage playImage,pauseImage,FFImage,FRImage,nextImage,previousImage,mutedImage,unmutedImage;
 PFont generalFont;
-color black =#000000, resetColour = #FFFFFF;
+color black =#000000, grey = #464a4e, resetColour = #FFFFFF;
+color hoverOverColour = resetColour;
 //String  = ;
 void  setup() {
   //fullScreen();
@@ -60,25 +64,26 @@ void  setup() {
   playPauseButtonX = playPauseElipseX-playPauseDiameter/2;
   playPauseButtonY = smallerDimension-playPauseDiameter*1.1;
   //
-  nextButtonWidth = smallerDimension*1/12;
-  nextButtonHeight = playPauseDiameter;
-  nextButtonX =  playPauseElipseX+nextButtonWidth;
-  nextButtonY = playPauseButtonY;
-  //
-  previousButtonWidth = nextButtonWidth;
-  previousButtonHeight = nextButtonHeight;
-  previousButtonX = playPauseElipseX-previousButtonWidth*2;
-  previousButtonY = nextButtonY;
-  //
-  FFButtonWidth = previousButtonWidth;
-  FFButtonHeight = previousButtonHeight;
-  FFButtonX = playPauseElipseX+FFButtonWidth*2.5;
-  FFButtonY = previousButtonY;
+  FFButtonWidth = smallerDimension*1/12;
+  FFButtonHeight = playPauseDiameter;
+  FFButtonX = playPauseElipseX+FFButtonWidth;
+  FFButtonY = playPauseButtonY;
   //
   rewindButtonWidth = FFButtonWidth;
   rewindButtonHeight = FFButtonHeight;
-  rewindButtonX = playPauseElipseX-rewindButtonWidth*3.5;
+  rewindButtonX = playPauseElipseX-rewindButtonWidth*2;
   rewindButtonY = FFButtonY;
+  //
+  nextButtonWidth = rewindButtonWidth;
+  nextButtonHeight = rewindButtonHeight;
+  nextButtonX =  playPauseElipseX+nextButtonWidth*2.5;
+  nextButtonY = rewindButtonY;
+  //
+  previousButtonWidth = nextButtonWidth;
+  previousButtonHeight = nextButtonHeight;
+  previousButtonX = playPauseElipseX-previousButtonWidth*3.5;
+  previousButtonY = nextButtonY;
+  //
   //
   loopButtonWidth = rewindButtonWidth;
   loopButtonHeight = rewindButtonHeight;
@@ -90,23 +95,30 @@ void  setup() {
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
   stroke(1);
   ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
-  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
-  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
   rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+    rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
   //
   //Images
   String imagePathway = "ImagesUsed/";
   String imageDirectory = sketchPath(imagePathway);
-  wasd
-  //
-  //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
-  //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
-  //String extension = ".mp3";
-  //music load
-  minim = new Minim(this);
+  playImage = loadImage(imageDirectory + "play.png");
+  pauseImage = loadImage(imageDirectory + "pause.png");
+  FFImage = loadImage(imageDirectory + "FF.png");
+  FRImage = loadImage(imageDirectory + "FR.png");
+  nextImage = loadImage(imageDirectory + "next-button.png");
+  previousImage = loadImage(imageDirectory + "back.png");
+  mutedImage = loadImage(imageDirectory + "no-sound.png");
+  unmutedImage = loadImage(imageDirectory + "volume-up.png");
+    //
+    //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
+    //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
+    //String extension = ".mp3";
+    //music load
+    minim = new Minim(this);
   //
   String musicPathway = "MusicUsed/";
   String musicDirectory = sketchPath(musicPathway);
@@ -193,6 +205,19 @@ void  setup() {
   textFont(generalFont, size);
   text(songMetaData[currentSong].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   fill(resetColour);
+  /*  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+  rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+  rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+  rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);*/
+  //image(playImage,);
+  //image(pauseImage,);
+  image(FFImage,FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+  image(FRImage,rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+  image(nextImage,nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  image(previousImage,previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+  //image(mutedImage,);
+  //image(unmutedImage,);
 } //End setup
 //
 void draw() {
@@ -203,14 +228,14 @@ void draw() {
   println("Song Position:", song[currentSong].position()/1000, "Song Length:", song[currentSong].length()/1000 );
   println("Song Playing:", songMetaData[currentSong].title());
   //
-    if (loopOn == true && !song[currentSong].isPlaying()) {
+  if (loopOn == true && !song[currentSong].isPlaying()) {
     song[currentSong].rewind();
     song[currentSong].play();
   } else {
   }
   //
   //autoplay, next song automatically plays
- if ( song[currentSong].isPlaying() ) {
+  if ( song[currentSong].isPlaying() ) {
     if ( stopBoolean==true || pauseBoolean==true ) {
       song[currentSong].pause();
     }
@@ -220,11 +245,10 @@ void draw() {
     if ( stopBoolean == true ) {
       song[currentSong].pause();
     } else {
-      if ( song[currentSong].position() < 10000 && currentSong < numberOfSongs-1)  {
+      if ( song[currentSong].position() < 10000 && currentSong < numberOfSongs-1) {
         song[currentSong].rewind();
         currentSong = currentSong + 1;
         song[currentSong].play();
-        
       } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 && currentSong < numberOfSongs-1) {
         song[currentSong].rewind();
         currentSong = currentSong + 1;
@@ -234,8 +258,13 @@ void draw() {
         song[currentSong].play();
       }
     }
-  }
-
+  } 
+  //
+  if ( mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
+    fill( resetColour ); } else if wa
   //
 } //End draw
 //
@@ -307,7 +336,7 @@ void keyPressed() {
       song[currentSong].rewind();
       currentSong=currentSong+1;
       song[currentSong].play();
-    } 
+    }
   }
   if (key==CODED && keyCode == DOWN) {//PREVIOUS
     if (currentSong > 0) {
@@ -330,12 +359,23 @@ void keyPressed() {
 } //End keyPressed
 //
 void mousePressed() {
-  
-  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit(); //doesnt work
-  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )
-  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight );
-  if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight );
+
+  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit();
+  if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight )song[currentSong].skip(1000);
+  if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight )song[currentSong].skip(-1000);
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
+    if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )     if (currentSong < numberOfSongs-1) {
+    song[currentSong].pause();
+    song[currentSong].rewind();
+    currentSong=currentSong+1;
+    song[currentSong].play();
+  }
+  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight ) if (currentSong > 0) {
+    song[currentSong].pause();
+    song[currentSong].rewind();
+    currentSong=currentSong-1;
+    song[currentSong].play();
+  }
   if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
 } //End mousePressed
 //
