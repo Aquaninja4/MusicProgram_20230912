@@ -8,18 +8,19 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
 /* to do
-turn off/on autoplay
-loop to back of playlist
+ sound effects
+ turn off/on autoplay
+ loop to back of playlist
  display algorithm
  fix button errors
-
+ 
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean loopOn = false, stopBoolean = false, pauseBoolean = false;
+Boolean loopOn = false, stopBoolean = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -32,10 +33,10 @@ float previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeigh
 float FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight;
 float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
 float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
-PImage playImage,pauseImage,FFImage,FRImage,nextImage,previousImage,mutedImage,unmutedImage;
+PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage;
 PFont generalFont;
-color black =#000000, grey = #464a4e, resetColour = #FFFFFF;
-color hoverOverColour = resetColour;
+color black =#000000, grey = #e6e6e6, darkerGrey = #cacacb, resetColour = #FFFFFF;
+color hoverOverColour = resetColour, holdColour = darkerGrey;
 //String  = ;
 void  setup() {
   //fullScreen();
@@ -97,7 +98,7 @@ void  setup() {
   ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
   rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
   rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
-    rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
   rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
@@ -113,12 +114,12 @@ void  setup() {
   previousImage = loadImage(imageDirectory + "back.png");
   mutedImage = loadImage(imageDirectory + "no-sound.png");
   unmutedImage = loadImage(imageDirectory + "volume-up.png");
-    //
-    //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
-    //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
-    //String extension = ".mp3";
-    //music load
-    minim = new Minim(this);
+  //
+  //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
+  //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
+  //String extension = ".mp3";
+  //music load
+  minim = new Minim(this);
   //
   String musicPathway = "MusicUsed/";
   String musicDirectory = sketchPath(musicPathway);
@@ -205,19 +206,6 @@ void  setup() {
   textFont(generalFont, size);
   text(songMetaData[currentSong].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   fill(resetColour);
-  /*  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
-  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
-  rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
-  rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
-  rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);*/
-  //image(playImage,);
-  //image(pauseImage,);
-  image(FFImage,FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
-  image(FRImage,rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
-  image(nextImage,nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
-  image(previousImage,previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
-  //image(mutedImage,);
-  //image(unmutedImage,);
 } //End setup
 //
 void draw() {
@@ -258,13 +246,73 @@ void draw() {
         song[currentSong].play();
       }
     }
-  } 
+  }
   //
   if ( mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
     hoverOverColour = grey;
     fill( hoverOverColour );
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
-    fill( resetColour ); } else if wa
+    fill( resetColour );
+    //
+  } else if ( mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+FFButtonHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight );
+    fill( resetColour );
+    //
+  } else if ( mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+    fill( resetColour );
+    //
+  } else if ( mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect( previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+    fill( resetColour );
+    //
+  } else { //No Buttons
+    fill( resetColour );
+    rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
+    rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight );
+    rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+    rect( previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+  }
+  //
+    if (hoverHoldFF == true) {
+    hoverOverColour = holdColour;
+    fill( hoverOverColour );
+    rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+    fill( resetColour );
+  }
+  //
+  if (hoverHoldFR == true) {
+    hoverOverColour = holdColour;
+    fill( hoverOverColour );
+    rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+    fill( resetColour );
+  }
+  if (FFHold == true) {
+    delay(200);
+    song[currentSong].skip(1000);
+  } else {
+  }
+  //
+  if (rewindHold == true) {
+    delay(200);
+    song[currentSong].skip(-1000);
+  } else {
+  }
+  //
+  //image(playImage,);
+  //image(pauseImage,);
+  image(FFImage, FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+  image(FRImage, rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+  image(nextImage, nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  image(previousImage, previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+  //image(mutedImage,);
+  //image(unmutedImage,);
   //
 } //End draw
 //
@@ -361,10 +409,20 @@ void keyPressed() {
 void mousePressed() {
 
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit();
-  if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight )song[currentSong].skip(1000);
-  if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight )song[currentSong].skip(-1000);
+  if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
+    song[currentSong].skip(1000);
+    hoverHoldFF = true;
+    delay(500);
+    FFHold = true;
+  }
+  if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight ) {
+    song[currentSong].skip(-1000);
+    hoverHoldFR = true;
+    delay(500);
+    rewindHold = true;
+  }
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
-    if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )     if (currentSong < numberOfSongs-1) {
+  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )if (currentSong < numberOfSongs-1) {
     song[currentSong].pause();
     song[currentSong].rewind();
     currentSong=currentSong+1;
@@ -378,5 +436,12 @@ void mousePressed() {
   }
   if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
 } //End mousePressed
+void mouseReleased() {
+  hoverHoldFF = false;
+  hoverHoldFR = false;
+  FFHold = false;
+  rewindHold = false;
+} //End mouseReleased
+
 //
 //End MAIN Program
