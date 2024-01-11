@@ -13,14 +13,14 @@ import ddf.minim.ugens.*;
  loop to back of playlist
  display algorithm
  fix button errors
- 
+ shuffle using random, making next go to a random song?
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean loopOn = false, stopBoolean = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
+Boolean loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -37,7 +37,9 @@ PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedI
 PFont generalFont;
 color black =#000000, grey = #e6e6e6, darkerGrey = #cacacb, resetColour = #FFFFFF;
 color hoverOverColour = resetColour, holdColour = darkerGrey;
+//int currentSong = numberOfSongs - numberOfSongs + int (random(numberOfSongs));
 //String  = ;
+
 void  setup() {
   //fullScreen();
   //size(300, 700); //Portrait size
@@ -223,14 +225,14 @@ void draw() {
   }
   //
   //autoplay, next song automatically plays
+  fix
   if ( song[currentSong].isPlaying() ) {
-    if ( stopBoolean==true || pauseBoolean==true ) {
+    if ( pauseBoolean==true) {
       song[currentSong].pause();
     }
-    if ( stopBoolean==true ) song[currentSong].rewind();
   } else {
     //currentSong at end of FILE
-    if ( stopBoolean == true ) {
+    if ( pauseBoolean == true ) {
       song[currentSong].pause();
     } else {
       if ( song[currentSong].position() < 10000 && currentSong < numberOfSongs-1) {
@@ -242,7 +244,6 @@ void draw() {
         currentSong = currentSong + 1;
         song[currentSong].play();
       } else {
-        song[currentSong].rewind();
         song[currentSong].play();
       }
     }
@@ -280,7 +281,7 @@ void draw() {
     rect( previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   }
   //
-    if (hoverHoldFF == true) {
+  if (hoverHoldFF == true) {
     hoverOverColour = holdColour;
     fill( hoverOverColour );
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
@@ -361,19 +362,10 @@ void keyPressed() {
   //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
-    if (song[currentSong].isPlaying() ) {
-      if (stopBoolean == true) {
-        stopBoolean = false;
-      } else {
-        pauseBoolean=true;
-      }
-      if (pauseBoolean=true) {
-        pauseBoolean=false;
-      } else {
-        pauseBoolean=true;
-      }
-      //} else {
-      //song[currentSong].play();
+    if (pauseBoolean==true) {
+      pauseBoolean = false;
+    } else {
+      pauseBoolean = true;
     }
   }
   //simple Next and previous Buttons
@@ -398,10 +390,9 @@ void keyPressed() {
   //simple stop
   if ( key=='S' | key=='s' ) {
     if ( song[currentSong].isPlaying() ) {
-      song[currentSong].pause();
-      stopBoolean = true;
+      pauseBoolean = true;
     } else {
-      stopBoolean = false;
+      pauseBoolean = false;
     }
   }
 } //End keyPressed
@@ -409,31 +400,35 @@ void keyPressed() {
 void mousePressed() {
 
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit();
+  //
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
     song[currentSong].skip(1000);
     hoverHoldFF = true;
     delay(500);
     FFHold = true;
   }
+  //
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight ) {
     song[currentSong].skip(-1000);
     hoverHoldFR = true;
     delay(500);
     rewindHold = true;
   }
-  if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight );
+  //
   if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )if (currentSong < numberOfSongs-1) {
     song[currentSong].pause();
     song[currentSong].rewind();
     currentSong=currentSong+1;
     song[currentSong].play();
   }
+  //
   if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight ) if (currentSong > 0) {
     song[currentSong].pause();
     song[currentSong].rewind();
     currentSong=currentSong-1;
     song[currentSong].play();
   }
+  //
   if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
 } //End mousePressed
 void mouseReleased() {
@@ -441,6 +436,9 @@ void mouseReleased() {
   hoverHoldFR = false;
   FFHold = false;
   rewindHold = false;
+} //End mouseReleased
+
+void mouseClicked() {
 } //End mouseReleased
 
 //
