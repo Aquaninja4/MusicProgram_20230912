@@ -20,7 +20,7 @@ int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
+Boolean test = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -92,8 +92,10 @@ void  setup() {
   loopButtonHeight = rewindButtonHeight;
   loopButtonX = playPauseElipseX+loopButtonWidth*4;
   loopButtonY = rewindButtonY;
+  //
+
   //DIVs
-  rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  // rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   noStroke();
   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
   stroke(1);
@@ -201,13 +203,6 @@ void  setup() {
   //
   //random beginning song
   currentSong = int(random(0, numberOfSongs-1)); //casting truncates the decimal
-  generalFont = createFont("Georgia", 55);
-  fill(black);
-  textAlign(CENTER, CENTER);
-  int size = 20;
-  textFont(generalFont, size);
-  text(songMetaData[currentSong].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
-  fill(resetColour);
 } //End setup
 //
 void draw() {
@@ -225,7 +220,7 @@ void draw() {
   }
   //
   //autoplay, next song automatically plays
-  fix
+
   if ( song[currentSong].isPlaying() ) {
     if ( pauseBoolean==true) {
       song[currentSong].pause();
@@ -244,6 +239,7 @@ void draw() {
         currentSong = currentSong + 1;
         song[currentSong].play();
       } else {
+        song[currentSong].rewind();
         song[currentSong].play();
       }
     }
@@ -315,6 +311,14 @@ void draw() {
   //image(mutedImage,);
   //image(unmutedImage,);
   //
+  rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  int size = 20;
+  generalFont = createFont("Georgia", 55);
+  fill(black);
+  textAlign(CENTER, CENTER);
+  textFont(generalFont, size);
+  text(songMetaData[currentSong].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  fill(resetColour);
 } //End draw
 //
 void keyPressed() {
@@ -395,6 +399,14 @@ void keyPressed() {
       pauseBoolean = false;
     }
   }
+  //
+  if ( key=='T' | key=='t' ) {
+    if ( test == false ) {
+      test = true;
+    } else {
+      test = false;
+    }
+  }
 } //End keyPressed
 //
 void mousePressed() {
@@ -402,17 +414,35 @@ void mousePressed() {
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit();
   //
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
-    song[currentSong].skip(1000);
     hoverHoldFF = true;
     delay(500);
     FFHold = true;
   }
   //
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight ) {
-    song[currentSong].skip(-1000);
     hoverHoldFR = true;
     delay(500);
     rewindHold = true;
+  }
+  //
+  //
+  if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
+} //End mousePressed
+void mouseReleased() {
+  hoverHoldFF = false;
+  hoverHoldFR = false;
+  FFHold = false;
+  rewindHold = false;
+} //End mouseReleased
+
+void mouseClicked() {
+
+  if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
+    song[currentSong].skip(1000);
+  }
+  //
+  if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight ) {
+    song[currentSong].skip(-1000);
   }
   //
   if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )if (currentSong < numberOfSongs-1) {
@@ -429,16 +459,6 @@ void mousePressed() {
     song[currentSong].play();
   }
   //
-  if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
-} //End mousePressed
-void mouseReleased() {
-  hoverHoldFF = false;
-  hoverHoldFR = false;
-  FFHold = false;
-  rewindHold = false;
-} //End mouseReleased
-
-void mouseClicked() {
 } //End mouseReleased
 
 //
