@@ -341,9 +341,6 @@ void keyPressed() {
    song[0].play();}
    */
 
-
-
-
   //
   if (key == 'M' | key == 'm') {//MUTE Button
     //MUTE Behavior: stops electricy to speakers, does not stop musicFile
@@ -415,13 +412,13 @@ void mousePressed() {
   //
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
     hoverHoldFF = true;
-    delay(500);
+    delay(250);
     FFHold = true;
   }
   //
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight ) {
     hoverHoldFR = true;
-    delay(500);
+    delay(250);
     rewindHold = true;
   }
   //
