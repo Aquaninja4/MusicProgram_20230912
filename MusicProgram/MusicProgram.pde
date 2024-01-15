@@ -9,18 +9,18 @@ import ddf.minim.ugens.*;
 //
 /* to do
  sound effects
- turn off/on autoplay
- loop to back of playlist
+ hovering over tells u the hotkeys for the musicplayer?
  display algorithm
- fix button errors
+ button hover and hoverclick
  shuffle using random, making next go to a random song?
+ add spotify ads (jk)
  */
 //Global Variables
 int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean test = false, autoPlayFix = false, loopSongOn = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
+Boolean test = false, shuffleBoolean = false, autoPlayFix = false, loopSongOn = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -207,13 +207,15 @@ void  setup() {
 //
 void draw() {
   //
-  if ( song[currentSong].isPlaying()  && loopSongOn==true ) println("Looping Forever");
-  if ( song[currentSong].isPlaying() && loopSongOn==false ) println("Playing Once");
-  //
+  if ( song[currentSong].isPlaying()  && loopSongOn==true && loopOn==false && shuffleBoolean ==false) println("Looping One Song");
+  if ( song[currentSong].isPlaying()  && loopOn==true && loopSongOn==false && shuffleBoolean ==false ) println("Looping Forever");
+  if ( song[currentSong].isPlaying() && loopSongOn==false && loopOn==false && shuffleBoolean ==false) println("Playing Once");
+  if ( song[currentSong].isPlaying() && shuffleBoolean ==true) println("Shuffle On");
+
   println("Song Position:", song[currentSong].position()/1000, "Song Length:", song[currentSong].length()/1000 );
   println("Song Playing:", songMetaData[currentSong].title());
   //
-
+//if (shuffleBoolean == true && !song[currentSong].isPlaying()) currentSong = int(random(0, numberOfSongs-1));
   //
 
   //autoplay, next song automatically plays
@@ -222,18 +224,29 @@ void draw() {
       song[currentSong].pause();
     }
   } else {
-    if (loopSongOn == true) {
+    if (shuffleBoolean == true) {
+      //shuffle code if i work on it 
+    } else if (loopSongOn == true && shuffleBoolean == false) {
       song[currentSong].rewind();
       song[currentSong].play();
+      //
+    } else if (loopOn == true && currentSong == numberOfSongs-1&& shuffleBoolean == false) {
+      song[currentSong].rewind();
+      currentSong = currentSong-(numberOfSongs-1);
+      song[currentSong].play(currentSong);
+      //
     } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 && currentSong < numberOfSongs-1) {
       song[currentSong].rewind();
       currentSong = currentSong + 1;
       song[currentSong].play();
+      //
     } else if (currentSong == numberOfSongs-1 && autoPlayFix == true ) {
       song[currentSong].rewind();
       song[currentSong].play();
+      //
     } else if ( pauseBoolean==false) {
       song[currentSong].play();
+      //
     }
   }
   //
@@ -331,14 +344,18 @@ void keyPressed() {
     soundEffects[currentSong].play();
   }
 
-loopOn
   if (key == 'L' | key == 'l') {
-    if (loopSongOn==true) {
-      loopSongOn = false;
-    } else {
+    if (loopOn == false && loopSongOn == false) {
+      loopOn = true;
+    } else if (loopOn == true && loopSongOn == false) {
       loopSongOn = true;
+      loopOn = false;
+    } else if (loopOn == false && loopSongOn == true) {
+      loopSongOn = false;
+      loopOn = false;
     }
   }
+
 
   /* // loop playlist
    if (song[currentSong].isPlaying() ) {
@@ -390,6 +407,11 @@ loopOn
       song[currentSong].rewind();
       currentSong=currentSong+1;
       song[currentSong].play();
+    } else if (currentSong==numberOfSongs-1) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong = currentSong-(numberOfSongs-1);
+      song[currentSong].play();
     }
   }
   if (key==CODED && keyCode == DOWN) {//PREVIOUS
@@ -398,15 +420,20 @@ loopOn
       song[currentSong].rewind();
       currentSong=currentSong-1;
       song[currentSong].play();
+    } else if (currentSong==0) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong = numberOfSongs-1;
+      song[currentSong].play();
     }
   }
   //
   //simple stop
   if ( key=='S' | key=='s' ) {
-    if ( song[currentSong].isPlaying() ) {
-      pauseBoolean = true;
+    if ( shuffleBoolean == false ) {
+      shuffleBoolean = true;
     } else {
-      pauseBoolean = false;
+      shuffleBoolean = false;
     }
   }
   //
@@ -419,7 +446,10 @@ loopOn
   }
   float f = (song[currentSong].length()-song[currentSong].length()*0.1);
   int fe = int(f);
-  if ( key=='/' ) song[currentSong].skip(fe) ;
+  if ( key=='/' ) {
+    song[currentSong].rewind();
+    song[currentSong].skip(fe);
+  }
 } //End keyPressed
 
 void keyReleased() {
@@ -465,18 +495,32 @@ void mouseClicked() {
     song[currentSong].skip(-1000);
   }
   //
-  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight )if (currentSong < numberOfSongs-1) {
-    song[currentSong].pause();
-    song[currentSong].rewind();
-    currentSong=currentSong+1;
-    song[currentSong].play();
+  if (mouseX>nextButtonX && mouseX<nextButtonX+nextButtonWidth && mouseY>nextButtonY && mouseY<nextButtonY+nextButtonHeight ) {
+    if (currentSong < numberOfSongs-1) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong=currentSong+1;
+      song[currentSong].play();
+    } else if (currentSong==numberOfSongs-1) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong = currentSong-(numberOfSongs-1);
+      song[currentSong].play();
+    }
   }
   //
-  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight ) if (currentSong > 0) {
-    song[currentSong].pause();
-    song[currentSong].rewind();
-    currentSong=currentSong-1;
-    song[currentSong].play();
+  if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight ) {
+    if (currentSong > 0) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong=currentSong-1;
+      song[currentSong].play();
+    } else if (currentSong==0) {
+      song[currentSong].pause();
+      song[currentSong].rewind();
+      currentSong = numberOfSongs-1;
+      song[currentSong].play();
+    }
   }
   //
   //
