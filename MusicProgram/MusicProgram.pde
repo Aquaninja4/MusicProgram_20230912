@@ -20,7 +20,7 @@ int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean test = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
+Boolean test = false, autoPlayFix = false, loopSongOn = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -94,19 +94,19 @@ void  setup() {
   loopButtonY = rewindButtonY;
   //
 
-  //DIVs
-  // rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
-  noStroke();
-  rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
-  stroke(1);
-  ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
-  rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
-  rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
-  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
-  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
-  rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  /*DIVs
+   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+   noStroke();
+   rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
+   stroke(1);
+   ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
+   rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+   rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+   rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+   rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight); */
   //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
-  //
+
   //Images
   String imagePathway = "ImagesUsed/";
   String imageDirectory = sketchPath(imagePathway);
@@ -207,43 +207,48 @@ void  setup() {
 //
 void draw() {
   //
-  if ( song[currentSong].isPlaying()  && loopOn==true ) println("Looping Forever");
-  if ( song[currentSong].isPlaying() && loopOn==false ) println("Playing Once");
+  if ( song[currentSong].isPlaying()  && loopSongOn==true ) println("Looping Forever");
+  if ( song[currentSong].isPlaying() && loopSongOn==false ) println("Playing Once");
   //
   println("Song Position:", song[currentSong].position()/1000, "Song Length:", song[currentSong].length()/1000 );
   println("Song Playing:", songMetaData[currentSong].title());
   //
-  if (loopOn == true && !song[currentSong].isPlaying()) {
-    song[currentSong].rewind();
-    song[currentSong].play();
-  } else {
-  }
-  //
-  //autoplay, next song automatically plays
 
+  //
+
+  //autoplay, next song automatically plays
   if ( song[currentSong].isPlaying() ) {
     if ( pauseBoolean==true) {
       song[currentSong].pause();
     }
   } else {
-    //currentSong at end of FILE
-    if ( pauseBoolean == true ) {
-      song[currentSong].pause();
-    } else {
-      if ( song[currentSong].position() < 10000 && currentSong < numberOfSongs-1) {
-        song[currentSong].rewind();
-        currentSong = currentSong + 1;
-        song[currentSong].play();
-      } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 && currentSong < numberOfSongs-1) {
-        song[currentSong].rewind();
-        currentSong = currentSong + 1;
-        song[currentSong].play();
-      } else {
-        song[currentSong].rewind();
-        song[currentSong].play();
-      }
+    if (loopSongOn == true) {
+      song[currentSong].rewind();
+      song[currentSong].play();
+    } else if ( song[currentSong].position() > song[currentSong].length()-song[currentSong].length()*0.1 && currentSong < numberOfSongs-1) {
+      song[currentSong].rewind();
+      currentSong = currentSong + 1;
+      song[currentSong].play();
+    } else if (currentSong == numberOfSongs-1 && autoPlayFix == true ) {
+      song[currentSong].rewind();
+      song[currentSong].play();
+    } else if ( pauseBoolean==false) {
+      song[currentSong].play();
     }
   }
+  //
+  rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  noStroke();
+  rect(actionBarX, actionBarY, actionBarWidth, actionBarHeight);
+  stroke(1);
+  ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
+  rect(FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
+  rect(rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+  rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
+  rect(previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
+  rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
+  //
   //
   if ( mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
     hoverOverColour = grey;
@@ -291,16 +296,17 @@ void draw() {
     fill( resetColour );
   }
   if (FFHold == true) {
-    delay(200);
-    song[currentSong].skip(1000);
+    delay(150);
+    song[currentSong].skip(2000);
   } else {
   }
   //
   if (rewindHold == true) {
-    delay(200);
-    song[currentSong].skip(-1000);
+    delay(150);
+    song[currentSong].skip(-2000);
   } else {
   }
+  //
   //
   //image(playImage,);
   //image(pauseImage,);
@@ -311,7 +317,6 @@ void draw() {
   //image(mutedImage,);
   //image(unmutedImage,);
   //
-  rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   int size = 20;
   generalFont = createFont("Georgia", 55);
   fill(black);
@@ -326,12 +331,12 @@ void keyPressed() {
     soundEffects[currentSong].play();
   }
 
-
+loopOn
   if (key == 'L' | key == 'l') {
-    if (loopOn==true) {
-      loopOn = false;
+    if (loopSongOn==true) {
+      loopSongOn = false;
     } else {
-      loopOn = true;
+      loopSongOn = true;
     }
   }
 
@@ -358,15 +363,23 @@ void keyPressed() {
   } //End MUTE
   //
   //Actual .skip() allows for variable ff and fr using .position()+-
-  if (key == CODED && keyCode == RIGHT) song[currentSong].skip(1000);
-  if (key == CODED && keyCode == LEFT) song[currentSong].skip(-1000);
+  if (key == CODED && keyCode == RIGHT) {
+    song[currentSong].skip(1000);
+    hoverHoldFF = true;
+  }
+  if (key == CODED && keyCode == LEFT) {
+    song[currentSong].skip(-1000);
+    hoverHoldFR = true;
+  }
   //
   //Simple STOP Behaviour: ask if.playing()
   if (key == ' ') {
     if (pauseBoolean==true) {
+      autoPlayFix = true;
       pauseBoolean = false;
     } else {
       pauseBoolean = true;
+      autoPlayFix = false;
     }
   }
   //simple Next and previous Buttons
@@ -404,21 +417,26 @@ void keyPressed() {
       test = false;
     }
   }
+  float f = (song[currentSong].length()-song[currentSong].length()*0.1);
+  int fe = int(f);
+  if ( key=='/' ) song[currentSong].skip(fe) ;
 } //End keyPressed
+
+void keyReleased() {
+  hoverHoldFF = false;
+  hoverHoldFR = false;
+}
+//End keyReleased
 //
 void mousePressed() {
-
-  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) exit();
   //
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
     hoverHoldFF = true;
-    delay(250);
     FFHold = true;
   }
   //
   if (mouseX>rewindButtonX && mouseX<rewindButtonX+rewindButtonWidth && mouseY>rewindButtonY && mouseY<rewindButtonY+rewindButtonHeight ) {
     hoverHoldFR = true;
-    delay(250);
     rewindHold = true;
   }
   //
@@ -433,6 +451,11 @@ void mouseReleased() {
 } //End mouseReleased
 
 void mouseClicked() {
+  if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) {
+    if (pauseBoolean == false) {
+      pauseBoolean = true;
+    } else pauseBoolean = false;
+  }
 
   if (mouseX>FFButtonX && mouseX<FFButtonX+FFButtonWidth && mouseY>FFButtonY && mouseY<FFButtonY+FFButtonHeight ) {
     song[currentSong].skip(1000);
@@ -455,6 +478,7 @@ void mouseClicked() {
     currentSong=currentSong-1;
     song[currentSong].play();
   }
+  //
   //
 } //End mouseReleased
 
