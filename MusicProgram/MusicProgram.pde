@@ -7,7 +7,9 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
+hover over loop
 /* to do
+
  sound effects
  hovering over tells u the hotkeys for the musicplayer?
  display algorithm
@@ -20,7 +22,7 @@ int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean test = false, shuffleBoolean = false, loopSongOn = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
+Boolean test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -33,7 +35,8 @@ float previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeigh
 float FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight;
 float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
 float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
-PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage;
+PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage, loopImage, loopOffImage, loopSongImage;
+
 PFont generalFont;
 color black =#000000, grey = #e6e6e6, darkerGrey = #cacacb, resetColour = #FFFFFF, red =#F73C3C;
 color hoverOverColour = resetColour, holdColour = darkerGrey;
@@ -118,9 +121,9 @@ void  setup() {
   previousImage = loadImage(imageDirectory + "back.png");
   mutedImage = loadImage(imageDirectory + "no-sound.png");
   unmutedImage = loadImage(imageDirectory + "volume-up.png");
-  loopOffImage = 
-  loopImage
-  loopSongImage
+  loopOffImage = loadImage(imageDirectory + "loopOff.png");
+  loopImage = loadImage(imageDirectory + "loop.png");
+  loopSongImage = loadImage(imageDirectory + "loopSong.png");
   //
   //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
   //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
@@ -242,12 +245,7 @@ void draw() {
       song[currentSong].rewind();
       currentSong = currentSong + 1;
       song[currentSong].play();
-      //
-    } else if (currentSong == numberOfSongs-1 && pauseBoolean==false ) {
-      song[currentSong].rewind();
-      song[currentSong].play();
-      //
-    } else if ( pauseBoolean==false) {
+      } else if ( pauseBoolean==false) {
       song[currentSong].play();
       //
     }
@@ -307,6 +305,9 @@ void draw() {
   //
   hoverOverColour = holdColour;
   fill( hoverOverColour );
+  if (hoverHoldLoop == true) {
+    rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  }
   if (hoverHoldPlayPause == true) {
     ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
   }
@@ -347,7 +348,13 @@ void draw() {
   image(previousImage, previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   //image(mutedImage,);
   //image(unmutedImage,);
-  //
+  if (loopOn == false && loopSongOn == false) {
+    image(loopOffImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  } else if (loopOn == true && loopSongOn == false) {
+    image(loopImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  } else if (loopOn == false && loopSongOn == true) {
+    image(loopSongImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  }
   //
   int size = 20;
   generalFont = createFont("Georgia", 55);
@@ -365,11 +372,14 @@ void keyPressed() {
 
   if (key == 'L' | key == 'l') {
     if (loopOn == false && loopSongOn == false) {
+      hoverHoldLoop = true;
       loopOn = true;
     } else if (loopOn == true && loopSongOn == false) {
+      hoverHoldLoop = true;
       loopSongOn = true;
       loopOn = false;
     } else if (loopOn == false && loopSongOn == true) {
+      hoverHoldLoop = true;
       loopSongOn = false;
       loopOn = false;
     }
@@ -403,6 +413,8 @@ void keyPressed() {
     song[currentSong].skip(1000);
     hoverHoldFF = true;
   }
+  
+  hold is whack
   if (key == CODED && keyCode == LEFT) {
     song[currentSong].skip(-1000);
     hoverHoldFR = true;
@@ -451,7 +463,6 @@ void keyPressed() {
     }
   }
   //
-  //simple stop
   /* if ( key=='S' | key=='s' ) {
    if ( shuffleBoolean == false ) {
    shuffleBoolean = true;
@@ -476,6 +487,7 @@ void keyPressed() {
 } //End keyPressed
 
 void keyReleased() {
+  hoverHoldLoop = false;
   hoverHoldFF = false;
   hoverHoldFR = false;
   hoverHoldPlayPause = false;
@@ -488,6 +500,9 @@ void keyReleased() {
 //
 void mousePressed() {
   //
+  if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight ) {
+    hoverHoldLoop = true;
+  }
   if (mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY&& mouseY<playPauseButtonY+playPauseDiameter) {
     hoverHoldPlayPause = true;
   }
@@ -512,6 +527,7 @@ void mousePressed() {
   if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
 } //End mousePressed
 void mouseReleased() {
+  hoverHoldLoop = false;
   hoverHoldFF = false;
   hoverHoldFR = false;
   hoverHoldPlayPause = false;
@@ -561,6 +577,17 @@ void mouseClicked() {
       song[currentSong].rewind();
       currentSong = numberOfSongs-1;
       song[currentSong].play();
+    }
+  }
+  if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight ) {
+    if (loopOn == false && loopSongOn == false) {
+      loopOn = true;
+    } else if (loopOn == true && loopSongOn == false) {
+      loopSongOn = true;
+      loopOn = false;
+    } else if (loopOn == false && loopSongOn == true) {
+      loopSongOn = false;
+      loopOn = false;
     }
   }
   //
