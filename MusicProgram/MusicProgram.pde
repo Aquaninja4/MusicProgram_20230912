@@ -7,9 +7,10 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
-hover over loop
+make mute button
+song position/songlength in minutes and seconds bottom corner 
 /* to do
-
+ 
  sound effects
  hovering over tells u the hotkeys for the musicplayer?
  display algorithm
@@ -17,8 +18,8 @@ hover over loop
  shuffle using random, making next go to a random song?
  add ads (jk)
  */
-//Global Variables
-int appWidth, appHeight, smallerDimension;
+  //Global Variables
+  int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
@@ -245,7 +246,7 @@ void draw() {
       song[currentSong].rewind();
       currentSong = currentSong + 1;
       song[currentSong].play();
-      } else if ( pauseBoolean==false) {
+    } else if ( pauseBoolean==false) {
       song[currentSong].play();
       //
     }
@@ -294,7 +295,12 @@ void draw() {
     fill( hoverOverColour );
     rect( previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
     fill( resetColour );
-    //
+    // loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight
+  } else if ( mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect( loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+    fill( resetColour );
   } else { //No Buttons
     fill( resetColour );
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
@@ -413,9 +419,9 @@ void keyPressed() {
     song[currentSong].skip(1000);
     hoverHoldFF = true;
   }
-  
-  hold is whack
-  if (key == CODED && keyCode == LEFT) {
+
+  //hold is whack fix?
+    if (key == CODED && keyCode == LEFT) {
     song[currentSong].skip(-1000);
     hoverHoldFR = true;
   }
