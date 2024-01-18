@@ -515,6 +515,7 @@ void keyReleased() {
   hoverHoldPrevious = false;
   FFHold = false;
   rewindHold = false;
+  muteHold = false;
 }
 //End keyReleased
 //
@@ -555,6 +556,7 @@ void mouseReleased() {
   hoverHoldPrevious = false;
   FFHold = false;
   rewindHold = false;
+  muteHold = false;
 } //End mouseReleased
 
 void mouseClicked() {
