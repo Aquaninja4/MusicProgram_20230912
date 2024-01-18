@@ -7,23 +7,23 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 //
-make mute button
-song position/songlength in minutes and seconds bottom corner 
+//make mute button
+//song position/songlength in minutes and seconds bottom corner
 /* to do
  
  sound effects
  hovering over tells u the hotkeys for the musicplayer?
  display algorithm
  button hover and hoverclick
- shuffle using random, making next go to a random song?
+ shuffle using random, making next go to a random song? currentsong=random number when not playing
  add ads (jk)
  */
-  //Global Variables
-  int appWidth, appHeight, smallerDimension;
+//Global Variables
+int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
+Boolean muteBoolean = false, test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -36,6 +36,7 @@ float previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeigh
 float FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight;
 float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
 float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
+float muteButtonX, muteButtonY, muteButtonHeight, muteButtonWidth;
 PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage, loopImage, loopOffImage, loopSongImage;
 
 PFont generalFont;
@@ -97,7 +98,11 @@ void  setup() {
   loopButtonX = playPauseElipseX+loopButtonWidth*4;
   loopButtonY = rewindButtonY;
   //
-
+  muteButtonWidth = loopButtonWidth;
+  muteButtonHeight = loopButtonHeight;
+  muteButtonX = playPauseElipseX-muteButtonWidth*5;
+  muteButtonY = loopButtonY;
+  //
   /*DIVs
    rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
    noStroke();
@@ -264,6 +269,7 @@ void draw() {
   rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
+  rect(muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
   //
   //
   if ( mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseDiameter ) {
@@ -301,7 +307,12 @@ void draw() {
     fill( hoverOverColour );
     rect( loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
     fill( resetColour );
-  } else { //No Buttons
+    } else if ( mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect(muteButtonX, muteButtonY,muteButtonWidth, muteButtonHeight);
+    fill( resetColour );
+    }else { //No Buttons
     fill( resetColour );
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
     rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight );
@@ -342,6 +353,12 @@ void draw() {
     song[currentSong].skip(-2000);
   } else {
   }
+
+  if (muteBoolean == true) {
+    song[currentSong].mute();
+  } else {
+    song[currentSong].unmute();
+  }
   //
   if (pauseBoolean == false) {
     image(pauseImage, playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
@@ -352,8 +369,11 @@ void draw() {
   image(FRImage, rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
   image(nextImage, nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
   image(previousImage, previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
-  //image(mutedImage,);
-  //image(unmutedImage,);
+  if (muteBoolean == true) {
+    image(mutedImage, muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
+  } else {
+    image(unmutedImage, muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
+  }
   if (loopOn == false && loopSongOn == false) {
     image(loopOffImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   } else if (loopOn == true && loopSongOn == false) {
@@ -400,19 +420,13 @@ void keyPressed() {
 
   //
   if (key == 'M' | key == 'm') {//MUTE Button
-    //MUTE Behavior: stops electricy to speakers, does not stop musicFile
-    //NOTE: MUTE has NO built-in PAUSE button, NO built-in rewind button
-    //ERROR: if song near end of musicFile, user will not know song is at the end
-    // Know ERROR: once song plays; MUTE acts like it doesn't work
-    if (song[currentSong].isMuted()) {
-      // ERROR song might not be playing
-      //CATCH: ask .isPlaying() or !.isPlaying()
-      song[currentSong].unmute();
+    if (muteBoolean == true) {
+      muteBoolean = false;
     } else {
-      //Possible ERROR: song could go back and go to the start; acts if its a play button
-      song[currentSong].mute();
+      muteBoolean = true;
     }
   } //End MUTE
+
   //
   //Actual .skip() allows for variable ff and fr using .position()+-
   if (key == CODED && keyCode == RIGHT) {
@@ -421,7 +435,7 @@ void keyPressed() {
   }
 
   //hold is whack fix?
-    if (key == CODED && keyCode == LEFT) {
+  if (key == CODED && keyCode == LEFT) {
     song[currentSong].skip(-1000);
     hoverHoldFR = true;
   }
@@ -529,8 +543,8 @@ void mousePressed() {
   if (mouseX>previousButtonX && mouseX<previousButtonX+previousButtonWidth && mouseY>previousButtonY && mouseY<previousButtonY+previousButtonHeight ) {
     hoverHoldPrevious = true;
   }
-  //
-  if (mouseX>loopButtonX && mouseX<loopButtonX+loopButtonWidth && mouseY>loopButtonY && mouseY<loopButtonY+loopButtonHeight );
+  if (mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
+  }
 } //End mousePressed
 void mouseReleased() {
   hoverHoldLoop = false;
@@ -596,6 +610,13 @@ void mouseClicked() {
       loopOn = false;
     }
   }
+    if (mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
+     if (muteBoolean == true) {
+      muteBoolean = false;
+    } else {
+      muteBoolean = true;
+    }
+    }
   //
   //
 } //End mouseReleased
