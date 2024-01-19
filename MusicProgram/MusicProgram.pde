@@ -47,6 +47,7 @@ color hoverOverColour = resetColour, holdColour = darkerGrey;
 //String  = ;
 
 void  setup() {
+  //background(0);
   //fullScreen();
   //size(300, 700); //Portrait size
   size(1200, 800);
@@ -232,7 +233,7 @@ void  setup() {
 //
 void draw() {
   //
-  make this into text? make an line over loop button when shuffle on?
+  //make this into text? make an line over loop button when shuffle on?
   if ( song[currentSong].isPlaying()  && loopSongOn==true && loopOn==false && shuffleBoolean ==false) println("Looping One Song");
   if ( song[currentSong].isPlaying()  && loopOn==true && loopSongOn==false && shuffleBoolean ==false ) println("Looping Forever");
   if ( song[currentSong].isPlaying() && loopSongOn==false && loopOn==false && shuffleBoolean ==false) println("Playing Once");
