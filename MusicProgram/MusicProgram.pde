@@ -23,7 +23,7 @@ int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean muteHold = false, muteBoolean = false, test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
+Boolean shuffleHold = false, muteHold = false, muteBoolean = false, test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -38,7 +38,8 @@ float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
 float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
 float muteButtonX, muteButtonY, muteButtonHeight, muteButtonWidth;
 float songLengthX, songLengthY, songLengthWidth, songLengthHeight;
-PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage, loopImage, loopOffImage, loopSongImage;
+float shuffleX, shuffleY, shuffleWidth, shuffleHeight;
+PImage shuffleOffImage, shuffleImage, playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage, loopImage, loopOffImage, loopSongImage;
 PFont generalFont;
 color black =#000000, grey = #e6e6e6, darkerGrey = #cacacb, resetColour = #FFFFFF, red =#F73C3C;
 color hoverOverColour = resetColour, holdColour = darkerGrey;
@@ -98,15 +99,20 @@ void  setup() {
   loopButtonX = playPauseElipseX+loopButtonWidth*4;
   loopButtonY = rewindButtonY;
   //
-  muteButtonWidth = loopButtonWidth;
-  muteButtonHeight = loopButtonHeight;
-  muteButtonX = playPauseElipseX-muteButtonWidth*5;
-  muteButtonY = loopButtonY;
+  muteButtonWidth = smallerDimension*1/15;
+  muteButtonHeight = smallerDimension*1/15;
+  muteButtonX = appWidth-muteButtonWidth*1.5;
+  muteButtonY = actionBarY+muteButtonHeight/4;
   //
   songLengthWidth = smallerDimension*1/6;
   songLengthHeight = muteButtonHeight;
-  songLengthX = appWidth+songLengthWidth-songTitleX;
+  songLengthX = appWidth+songLengthWidth;
   songLengthY = muteButtonY;
+  //
+  shuffleWidth = loopButtonWidth;
+  shuffleHeight = loopButtonHeight;
+  shuffleX = playPauseElipseX-shuffleWidth*5;
+  shuffleY = loopButtonY;
   //
   /*DIVs
    rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
@@ -135,6 +141,8 @@ void  setup() {
   loopOffImage = loadImage(imageDirectory + "loopOff.png");
   loopImage = loadImage(imageDirectory + "loop.png");
   loopSongImage = loadImage(imageDirectory + "loopSong.png");
+  shuffleOffImage = loadImage(imageDirectory + "shuffleOff.png");
+  shuffleImage = loadImage(imageDirectory + "shuffle.png");
   //
   //String yoasobiIphone = "YOASOBI - Yoru ni Kakeru (iPhone Ringtone Remix).mp3";
   //String TwelveSpeed = "Twelve Speed - Slynk.mp3";
@@ -224,6 +232,7 @@ void  setup() {
 //
 void draw() {
   //
+  make this into text? make an line over loop button when shuffle on?
   if ( song[currentSong].isPlaying()  && loopSongOn==true && loopOn==false && shuffleBoolean ==false) println("Looping One Song");
   if ( song[currentSong].isPlaying()  && loopOn==true && loopSongOn==false && shuffleBoolean ==false ) println("Looping Forever");
   if ( song[currentSong].isPlaying() && loopSongOn==false && loopOn==false && shuffleBoolean ==false) println("Playing Once");
@@ -277,7 +286,7 @@ void draw() {
   //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
   rect(muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
   // rect(songLengthX, songLengthY, songLengthWidth, songLengthHeight);
-  //
+  rect(shuffleX, shuffleY, shuffleWidth, shuffleHeight);
   //
   if ( mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseDiameter ) {
     hoverOverColour = grey;
@@ -319,6 +328,11 @@ void draw() {
     fill( hoverOverColour );
     rect(muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
     fill( resetColour );
+  } else if ( mouseX>shuffleX && mouseX<shuffleX+shuffleWidth && mouseY>shuffleY && mouseY<shuffleY+shuffleHeight ) {
+    hoverOverColour = grey;
+    fill( hoverOverColour );
+    rect( shuffleX, shuffleY, shuffleWidth, shuffleHeight);
+    fill( resetColour );
   } else { //No Buttons
     fill( resetColour );
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
@@ -354,6 +368,9 @@ void draw() {
   //
   if (hoverHoldFR == true) {
     rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
+  }
+  if (shuffleHold == true) {
+    rect(shuffleX, shuffleY, shuffleWidth, shuffleHeight);
   }
   fill( resetColour );
   //
@@ -396,6 +413,11 @@ void draw() {
     image(loopImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   } else if (loopOn == false && loopSongOn == true) {
     image(loopSongImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
+  }
+  if (shuffleBoolean == false) {
+    image(shuffleOffImage, shuffleX, shuffleY, shuffleWidth, shuffleHeight);
+  } else {
+    image(shuffleImage, shuffleX, shuffleY, shuffleWidth, shuffleHeight);
   }
   //
   generalFont = createFont("Georgia", 55);
@@ -544,10 +566,12 @@ void keyPressed() {
   //
   if ( key=='S' | key=='s' ) {
     if ( shuffleBoolean == false ) {
+      shuffleHold = true;
       shuffleBoolean = true;
       soundEffects[3].rewind();
       soundEffects[3].play();
     } else {
+      shuffleHold = true;
       shuffleBoolean = false;
       soundEffects[3].rewind();
       soundEffects[3].play();
@@ -583,6 +607,7 @@ void keyReleased() {
   FFHold = false;
   rewindHold = false;
   muteHold = false;
+  shuffleHold = false;
 }
 //End keyReleased
 //
@@ -614,6 +639,9 @@ void mousePressed() {
   if (mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
     muteHold = true;
   }
+  if(mouseX>shuffleX && mouseX<shuffleX+shuffleWidth && mouseY>shuffleY && mouseY<shuffleY+shuffleHeight) {
+    shuffleHold = true;
+  }
 } //End mousePressed
 void mouseReleased() {
   hoverHoldLoop = false;
@@ -625,6 +653,7 @@ void mouseReleased() {
   FFHold = false;
   rewindHold = false;
   muteHold = false;
+  shuffleHold = false;
 } //End mouseReleased
 
 void mouseClicked() {
@@ -737,6 +766,19 @@ void mouseClicked() {
       soundEffects[3].play();
     } else {
       muteBoolean = true;
+      soundEffects[3].pause();
+      soundEffects[3].rewind();
+      soundEffects[3].play();
+    }
+  }
+  if ( mouseX>shuffleX && mouseX<shuffleX+shuffleWidth && mouseY>shuffleY && mouseY<shuffleY+shuffleHeight ) {
+    if ( shuffleBoolean == false ) {
+      shuffleBoolean = true;
+      soundEffects[3].pause();
+      soundEffects[3].rewind();
+      soundEffects[3].play();
+    } else {
+      shuffleBoolean = false;
       soundEffects[3].pause();
       soundEffects[3].rewind();
       soundEffects[3].play();
