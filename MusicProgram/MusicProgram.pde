@@ -23,7 +23,7 @@ int appWidth, appHeight, smallerDimension;
 File musicFolder, soundEffectFolder;
 Minim minim; //crates object to access all functions
 int numberOfSongs = 1, numberOfSoundEffects = 1, currentSong = 0;//number of musicFiles in folder, os to count
-Boolean muteBoolean = false, test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
+Boolean muteHold = false, muteBoolean = false, test = false, shuffleBoolean = false, loopSongOn = false, hoverHoldLoop = false, loopOn = false, pauseBoolean = false, FFHold = false, rewindHold = false, hoverHoldFF = false, hoverHoldFR = false, hoverHoldPlayPause = false, hoverHoldNext = false, hoverHoldPrevious = false;
 //int numberOfsongMetaData = 5;
 AudioPlayer[] song = new AudioPlayer [numberOfSongs]; // creates "playlist" variable holding extensions WAV, AIFF, AU, mp3
 AudioPlayer [] soundEffects = new AudioPlayer [numberOfSoundEffects]; //Playlist for Sound Effects
@@ -37,8 +37,8 @@ float FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight;
 float rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight;
 float loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight;
 float muteButtonX, muteButtonY, muteButtonHeight, muteButtonWidth;
+float songLengthX, songLengthY, songLengthWidth, songLengthHeight;
 PImage playImage, pauseImage, FFImage, FRImage, nextImage, previousImage, mutedImage, unmutedImage, loopImage, loopOffImage, loopSongImage;
-
 PFont generalFont;
 color black =#000000, grey = #e6e6e6, darkerGrey = #cacacb, resetColour = #FFFFFF, red =#F73C3C;
 color hoverOverColour = resetColour, holdColour = darkerGrey;
@@ -102,6 +102,11 @@ void  setup() {
   muteButtonHeight = loopButtonHeight;
   muteButtonX = playPauseElipseX-muteButtonWidth*5;
   muteButtonY = loopButtonY;
+  //
+  songLengthWidth = smallerDimension*1/6;
+  songLengthHeight = muteButtonHeight;
+  songLengthX = appWidth+songLengthWidth-songTitleX;
+  songLengthY = muteButtonY;
   //
   /*DIVs
    rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
@@ -270,6 +275,7 @@ void draw() {
   rect(songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   //rect(playPauseButtonX, playPauseButtonY, playPauseDiameter, playPauseDiameter);
   rect(muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
+ // rect(songLengthX, songLengthY, songLengthWidth, songLengthHeight);
   //
   //
   if ( mouseX>playPauseButtonX && mouseX<playPauseButtonX+playPauseDiameter && mouseY>playPauseButtonY && mouseY<playPauseButtonY+playPauseDiameter ) {
@@ -307,12 +313,12 @@ void draw() {
     fill( hoverOverColour );
     rect( loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
     fill( resetColour );
-    } else if ( mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
+  } else if ( mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
     hoverOverColour = grey;
     fill( hoverOverColour );
-    rect(muteButtonX, muteButtonY,muteButtonWidth, muteButtonHeight);
+    rect(muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
     fill( resetColour );
-    }else { //No Buttons
+  } else { //No Buttons
     fill( resetColour );
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight );
     rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight );
@@ -322,18 +328,25 @@ void draw() {
   //
   hoverOverColour = holdColour;
   fill( hoverOverColour );
+  if (muteHold == true) {
+    rect(muteButtonX, muteButtonY, muteButtonWidth, muteButtonHeight);
+  }
   if (hoverHoldLoop == true) {
     rect(loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   }
+  //
   if (hoverHoldPlayPause == true) {
     ellipse(playPauseElipseX, playPauseElipseY, playPauseDiameter, playPauseDiameter);
   }
+  //
   if (hoverHoldNext == true) {
     rect(nextButtonX, nextButtonY, nextButtonWidth, nextButtonHeight);
   }
+  //
   if (hoverHoldPrevious == true) {
     rect( previousButtonX, previousButtonY, previousButtonWidth, previousButtonHeight);
   }
+  //
   if (hoverHoldFF == true) {
     rect( FFButtonX, FFButtonY, FFButtonWidth, FFButtonHeight);
   }
@@ -342,6 +355,8 @@ void draw() {
     rect( rewindButtonX, rewindButtonY, rewindButtonWidth, rewindButtonHeight);
   }
   fill( resetColour );
+  //
+  //
   if (FFHold == true) {
     delay(150);
     song[currentSong].skip(2000);
@@ -382,13 +397,22 @@ void draw() {
     image(loopSongImage, loopButtonX, loopButtonY, loopButtonWidth, loopButtonHeight);
   }
   //
-  int size = 20;
   generalFont = createFont("Georgia", 55);
+  int size = 25;
   fill(black);
   textAlign(CENTER, CENTER);
   textFont(generalFont, size);
   text(songMetaData[currentSong].title(), songTitleX, songTitleY, songTitleWidth, songTitleHeight);
   fill(resetColour);
+//
+/*
+  fill(black);
+  textAlign(CENTER, CENTER);
+  textFont(generalFont, size);
+  text(, songLengthX, songLengthY, songLengthHeight, songLengthWidth);
+  fill(resetColour); |*/
+
+  println(songMetaData[currentSong].length()/1000/60, "Minutes", songMetaData[currentSong].length()/1000 - (songMetaData[currentSong].length()/1000/60*60), "Seconds" );
 } //End draw
 //
 void keyPressed() {
@@ -411,18 +435,13 @@ void keyPressed() {
     }
   }
 
-
-  /* // loop playlist
-   if (song[currentSong].isPlaying() ) {
-   if (currentSong >= numberOfSongs) {
-   song[0].play();}
-   */
-
   //
   if (key == 'M' | key == 'm') {//MUTE Button
     if (muteBoolean == true) {
+      muteHold = true;
       muteBoolean = false;
     } else {
+      muteHold = true;
       muteBoolean = true;
     }
   } //End MUTE
@@ -545,6 +564,7 @@ void mousePressed() {
     hoverHoldPrevious = true;
   }
   if (mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
+    muteHold = true;
   }
 } //End mousePressed
 void mouseReleased() {
@@ -612,13 +632,13 @@ void mouseClicked() {
       loopOn = false;
     }
   }
-    if (mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
-     if (muteBoolean == true) {
+  if (mouseX>muteButtonX && mouseX<muteButtonX+muteButtonWidth && mouseY>muteButtonY && mouseY<muteButtonY+muteButtonHeight ) {
+    if (muteBoolean == true) {
       muteBoolean = false;
     } else {
       muteBoolean = true;
     }
-    }
+  }
   //
   //
 } //End mouseReleased
